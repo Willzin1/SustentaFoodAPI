@@ -78,6 +78,7 @@ class UserController extends Controller
                 'message' => 'Usuário não encontrado'
             ], 404);
         }
+
         return response()->json($user->only(['id', 'name', 'email', 'phone'], 200));
     }
 
