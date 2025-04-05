@@ -71,7 +71,7 @@ class UserController extends Controller
      */
     public function show(String $id) : JsonResponse
     {
-        $user = User::find($id);
+        $user = $this->user->find($id);
 
         if(!$user) {
             return response()->json([
@@ -86,12 +86,14 @@ class UserController extends Controller
      */
     public function update(Request $request, String $id) : JsonResponse
     {
-        $user = User::find($id);
+        $user = $this->user->find($id);
         if(!$user) {
             return response()->json(['message' => 'Usuario não encontrado'], 404);
         }
 
         try {
+            DB::beginTransaction();
+
             $request->validate([
                 'name' => 'required',
                 'phone' => 'required|phone:br'
@@ -133,7 +135,6 @@ class UserController extends Controller
         }
 
         return response()->json($user);
-
     }
 
     /**

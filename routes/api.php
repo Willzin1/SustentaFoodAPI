@@ -14,10 +14,11 @@ Route::prefix('/users')->controller(UserController::class)->group(function() {
     Route::get('/', 'index');
     Route::post('/', 'store');
     Route::get('/{user}', 'show');
-    Route::put('/{user}', 'update');
+    Route::put('/{user}', 'update')->middleware('auth:sanctum');
     Route::delete('/{user}', 'destroy');
 });
 
-Route::prefix('/login')->controller(TokenController::class)->group(function() {
-    Route::post('/', 'store');
+Route::controller(TokenController::class)->group(function() {
+    Route::post('/login', 'store');
+    Route::delete('/logout', 'destroy')->middleware('auth:sanctum');
 });
