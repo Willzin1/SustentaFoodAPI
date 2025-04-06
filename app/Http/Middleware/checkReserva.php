@@ -26,6 +26,10 @@ class CheckReserva
             ], 404);
         }
 
+        if (Auth::user()->role == 'admin') {
+            return $next($request);
+        }
+
         if (Auth::id() !== $reserva->user_id) {
             return response()->json(['message' => 'Acesso não autorizado'], 403);
         }

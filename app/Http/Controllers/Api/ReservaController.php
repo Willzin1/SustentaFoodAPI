@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ReservaRequest;
 use App\Models\Reserva;
 use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -22,9 +23,9 @@ class ReservaController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): JsonResponse
     {
-        $reservas = $this->reserva->orderBy('id', 'DESC')->get(['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras']);
+        $reservas = $this->reserva->with('user')->orderBy('id', 'DESC')->paginate(5, ['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras']);
 
         return response()->json($reservas, 200);
     }
@@ -32,7 +33,7 @@ class ReservaController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(ReservaRequest $request)
+    public function store(ReservaRequest $request): JsonResponse
     {
         $user = Auth::user();
 
@@ -74,7 +75,7 @@ class ReservaController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id): JsonResponse
     {
         $reserva = $this->reserva->find($id);
 
@@ -84,13 +85,13 @@ class ReservaController extends Controller
             ], 404);
         }
 
-        return response()->json($reserva->except('created_at', 'updated_at'), 200);
+        return response()->json($reserva->only('id', 'user_id', 'data', 'hora', 'quantidade_cadeiras'), 200);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(ReservaRequest $request, string $id)
+    public function update(ReservaRequest $request, string $id): JsonResponse
     {
         $user = Auth::user();
 
@@ -126,14 +127,14 @@ class ReservaController extends Controller
                 'error' => $e->getMessage()
             ];
 
-            return response()->json($errors, 40);
+            return response()->json($errors, 401);
         }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id): JsonResponse
     {
         try {
             DB::beginTransaction();

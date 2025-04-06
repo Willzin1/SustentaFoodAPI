@@ -41,7 +41,8 @@ class ReservaRequest extends FormRequest
         ];
     }
 
-    public function messages() {
+    public function messages(): array
+    {
         return [
             'data.required' => 'Informe uma data',
             'hora.required' => 'Informe o horário da reserva',

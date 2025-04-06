@@ -39,7 +39,8 @@ class TokenRequest extends FormRequest
         ];
     }
 
-    public function messages() {
+    public function messages(): array
+    {
         return [
             'email.required' => 'E-mail é obrigatório',
             'email.email' => 'E-mail inválido',
