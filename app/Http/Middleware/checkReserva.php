@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class checkReserva
+class CheckReserva
 {
     /**
      * Handle an incoming request.
@@ -20,8 +20,14 @@ class checkReserva
         $reservaId = $request->route('reserva');
         $reserva = Reserva::find($reservaId);
 
+        if (!$reserva) {
+            return response()->json([
+                'message' => 'Reserva não encontrada'
+            ], 404);
+        }
+
         if (Auth::id() !== $reserva->user_id) {
-            return response()->json(['message' => 'Acesso não autorizado à reserva'], 403);
+            return response()->json(['message' => 'Acesso não autorizado'], 403);
         }
 
         return $next($request);

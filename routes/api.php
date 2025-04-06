@@ -24,10 +24,10 @@ Route::controller(TokenController::class)->group(function() {
     Route::delete('/logout', 'destroy')->middleware('auth:sanctum');
 });
 
-Route::prefix('/reservas')->controller(ReservaController::class)->middleware('auth:sanctum', 'checkReserva')->group(function() {
+Route::prefix('/reservas')->controller(ReservaController::class)->middleware('auth:sanctum')->group(function() {
     Route::get('/', 'index');
     Route::post('/', 'store');
-    Route::get('/{reserva}', 'show');
-    Route::put('/{reserva}', 'update');
-    Route::delete('/{reserva}', 'destroy');
+    Route::get('/{reserva}', 'show')->middleware('checkReserva');
+    Route::put('/{reserva}', 'update')->middleware('checkReserva');
+    Route::delete('/{reserva}', 'destroy')->middleware('checkReserva');
 });

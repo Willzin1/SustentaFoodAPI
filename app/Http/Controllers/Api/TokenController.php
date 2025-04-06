@@ -17,7 +17,7 @@ class TokenController extends Controller
         $user = User::where('email', $credentials['email'])->first();
 
         if(!$user) {
-            return response()->json(['error' => 'E-mail ou senha inválido(a)'], 404);
+            return response()->json(['error' => 'E-mail ou senha inválido(a)'], 401);
         }
 
         if(!Hash::check($credentials['password'], $user->password)) {

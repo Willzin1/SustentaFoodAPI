@@ -23,7 +23,7 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index() : JsonResponse
+    public function index(): JsonResponse
     {
         $users = $this->user->orderBy('id', 'DESC')->get(['id', 'name', 'email', 'phone']);
         return response()->json($users, 200);
@@ -32,7 +32,7 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(UserRequest $request) : JsonResponse
+    public function store(UserRequest $request): JsonResponse
     {
         DB::beginTransaction();
 
@@ -49,7 +49,7 @@ class UserController extends Controller
 
             return response()->json([
                 'message' => 'Usuário cadastrado com sucesso',
-                'user' => $user,
+                'user' => $user->only(['id', 'name', 'email', 'phone', 'role']),
             ], 201);
 
         }catch(Exception $e){
@@ -69,7 +69,7 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(String $id) : JsonResponse
+    public function show(String $id): JsonResponse
     {
         $user = $this->user->find($id);
 
@@ -79,17 +79,17 @@ class UserController extends Controller
             ], 404);
         }
 
-        return response()->json($user->only(['id', 'name', 'email', 'phone'], 200));
+        return response()->json($user->only(['id', 'name', 'email', 'phone']), 200);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, String $id) : JsonResponse
+    public function update(Request $request, String $id): JsonResponse
     {
         $user = $this->user->find($id);
         if(!$user) {
-            return response()->json(['message' => 'Usuario não encontrado'], 404);
+            return response()->json(['message' => 'Usuário não encontrado'], 404);
         }
 
         try {
@@ -123,7 +123,7 @@ class UserController extends Controller
 
             return response()->json([
                 'message' => 'Erro ao alterar informações',
-                'errors' => $errors
+                'error' => $errors
             ], 422);
 
         } catch (Exception $e){
@@ -134,14 +134,12 @@ class UserController extends Controller
                 'error' => $e->getMessage(),
             ], 400);
         }
-
-        return response()->json($user);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(String $id) : JsonResponse
+    public function destroy(String $id): JsonResponse
     {
         $user = User::find($id);
         if(!$user) {

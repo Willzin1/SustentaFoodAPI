@@ -43,19 +43,19 @@ class ReservaController extends Controller
                 'user_id' => $user->id,
                 'data' => $request->data,
                 'hora' => $request->hora,
-                'quantidade_cadeiras' => $request->quantidade_cadeiras === 'mais' ? $request->quantidade_custom : $request->quantidade_cadeiras,
+                'quantidade_cadeiras' => $request->quantidade_cadeiras,
             ]);
 
             if (!$reserva) {
                 return response()->json([
-                    'message' => 'Not successful'
+                    'message' => 'Não foi possível realizar reserva'
                 ], 400);
             }
 
             DB::commit();
 
             return response()->json([
-                'message' => 'Successful',
+                'message' => 'Reserva feita com sucesso!',
                 'reserva' => $reserva
             ], 201);
 
@@ -126,7 +126,7 @@ class ReservaController extends Controller
                 'error' => $e->getMessage()
             ];
 
-            return response()->json($errors, 401);
+            return response()->json($errors, 40);
         }
     }
 
@@ -135,8 +135,6 @@ class ReservaController extends Controller
      */
     public function destroy(string $id)
     {
-        $user = Auth::user();
-
         try {
             DB::beginTransaction();
 
