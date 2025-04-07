@@ -23,12 +23,9 @@ class CardapioController extends Controller
      */
     public function index(): JsonResponse
     {
-        $pratos = Prato::get(['id', 'nome', 'descricao', 'imagem', 'categoria']);
+        $pratos = Prato::paginate(5, ['id', 'nome', 'descricao', 'imagem', 'categoria']);
 
-        return response()->json([
-            'message' => 'Todos os pratos',
-            'pratos' => $pratos
-        ]);
+        return response()->json($pratos);
     }
 
     /**
