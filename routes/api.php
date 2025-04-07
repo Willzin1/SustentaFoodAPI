@@ -19,7 +19,7 @@ Route::controller(TokenController::class)->group(function() {
     Route::delete('/logout', 'destroy')->middleware('auth:sanctum');
 });
 
-Route::prefix('/reservas')->controller(ReservaController::class)->middleware('auth:sanctum', 'checkRole')->group(function() {
+Route::prefix('/reservas')->controller(ReservaController::class)->middleware('auth:sanctum')->group(function() {
     Route::get('/', 'index');
     Route::post('/', 'store');
     Route::get('/{reserva}', 'show')->middleware('checkReserva');
