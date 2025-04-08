@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\ReservasHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ReservaRequest;
 use App\Models\Reserva;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -30,15 +30,40 @@ class ReservaController extends Controller
         return response()->json($reservas, 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(ReservaRequest $request): JsonResponse
     {
         $user = Auth::user();
 
         try {
             DB::beginTransaction();
+
+            $isAvailable = ReservasHelper::checkAvailability(
+                $request->data,
+                $request->hora,
+                $request->quantidade_cadeiras
+            );
+
+            if (! $isAvailable) {
+                return response()->json([
+                    'message' => 'Reserva indisponível para esse horário.'
+                ], 400);
+            }
+
+            $reservationLimit = ReservasHelper::checkReservationLimit(
+                $user->id
+            );
+
+            if (! $reservationLimit) {
+                return response()->json([
+                    'message' => 'Somente 4 reservas por usuário'
+                ], 400);
+            }
+
+            if ($request->quantidade_cadeiras > 12) {
+                return response()->json([
+                    'message' => 'Reservas acima de 12 pessoas devem ser feitas diretamente com o restaurante.'
+                ], 400);
+            }
 
             $reserva = $this->reserva->create([
                 'user_id' => $user->id,
@@ -47,28 +72,20 @@ class ReservaController extends Controller
                 'quantidade_cadeiras' => $request->quantidade_cadeiras,
             ]);
 
-            if (!$reserva) {
-                return response()->json([
-                    'message' => 'Não foi possível realizar reserva'
-                ], 400);
-            }
-
             DB::commit();
 
             return response()->json([
                 'message' => 'Reserva feita com sucesso!',
-                'reserva' => $reserva
+                'reserva' => $reserva->only(['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras'])
             ], 201);
 
         } catch(Exception $e) {
             DB::rollBack();
 
-            $errors = [
+            return response()->json([
                 'message' => 'Ocorreu um erro ao fazer reserva',
                 'error' => $e->getMessage()
-            ];
-
-            return response()->json($errors, 400);
+            ], 400);
         }
     }
 
@@ -85,7 +102,7 @@ class ReservaController extends Controller
             ], 404);
         }
 
-        return response()->json($reserva->only('id', 'user_id', 'data', 'hora', 'quantidade_cadeiras'), 200);
+        return response()->json($reserva->only(['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras']), 200);
     }
 
     /**
@@ -93,8 +110,6 @@ class ReservaController extends Controller
      */
     public function update(ReservaRequest $request, string $id): JsonResponse
     {
-        $user = Auth::user();
-
         try {
             DB::beginTransaction();
 
@@ -104,6 +119,24 @@ class ReservaController extends Controller
                 return response()->json([
                     'message' => 'Reserva não encontrada'
                 ], 404);
+            }
+
+            $isAvailable = ReservasHelper::checkAvailability(
+                $request->data,
+                $request->hora,
+                $request->quantidade_cadeiras
+            );
+
+            if (! $isAvailable) {
+                return response()->json([
+                    'message' => 'Reserva indisponível para esse horário.'
+                ], 400);
+            }
+
+            if ($request->quantidade_cadeiras > 12) {
+                return response()->json([
+                    'message' => 'Reservas acima de 12 pessoas devem ser feitas diretamente com o restaurante.'
+                ], 400);
             }
 
             $reserva->update([
@@ -116,7 +149,7 @@ class ReservaController extends Controller
 
             return response()->json([
                 'message' => 'Informações alteradas com sucesso',
-                'reserva' => $reserva->only(['data', 'hora', 'quantidade_cadeiras']),
+                'reserva' => $reserva->only(['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras']),
             ], 200);
 
         } catch (Exception $e) {
@@ -152,7 +185,8 @@ class ReservaController extends Controller
             DB::commit();
 
             return response()->json([
-                'message' => 'Reserva excluída com sucesso'
+                'message' => 'Reserva excluída com sucesso',
+                'user' => $reserva->only(['user_id']),
             ], 200);
 
         } catch (Exception $e) {
