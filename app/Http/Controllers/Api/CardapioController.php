@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Support\Str;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PratoRequest;
 use App\Models\Prato;
@@ -33,37 +34,38 @@ class CardapioController extends Controller
      */
     public function store(PratoRequest $request): JsonResponse
     {
-        try{
+        try {
             DB::beginTransaction();
 
             $prato = $this->prato->create([
                 'nome' => $request->nome,
                 'descricao' => $request->descricao,
-                'categoria' => $request->categoria
+                'categoria' => $request->categoria,
             ]);
 
             if ($request->hasFile('imagem')) {
-                $path = $request->file('imagem')->store('pratos', 'public');
-                $prato->imagem = $path;
-                $prato->save();
+                $imgFile = $request->file('imagem');
+                $slug = Str::slug($request->nome);
+                $extension = $imgFile->getClientOriginalExtension();
+                $filename = "{$slug}-" . uniqid() . ".{$extension}";
+                $path = $request->file('imagem')->storeAs('pratos', $filename, 'public');
+                $prato->update(['imagem' => $path]);
             }
 
             DB::commit();
 
             return response()->json([
-                'message' => 'Prato adcionado com sucesso!',
-                'prato' => $prato->only('id', 'nome', 'descricao', 'categoria', 'imagem')
-            ]);
+                'message' => 'Prato cadastrado com sucesso!',
+                'prato' => $prato->only('id', 'nome', 'descricao', 'categoria', 'imagem'),
+            ], 201);
 
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
 
-            $errors = [
-                'message' => 'Ocorreu um erro ao fazer reserva',
-                'error' => $e->getMessage()
-            ];
-
-            return response()->json($errors, 400);
+            return response()->json([
+                'message' => 'Erro ao cadastrar prato',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 
@@ -99,12 +101,15 @@ class CardapioController extends Controller
                 ], 404);
             }
 
-            $prato->update($request->except('_token', '_method', 'imagem'));
+            $prato->update($request->except('_token', '_method'));
 
             if ($request->hasFile('imagem')) {
-                $path = $request->file('imagem')->store('pratos', 'public');
-                $prato->imagem = $path;
-                $prato->save();
+                $imgFile = $request->file('imagem');
+                $slug = Str::slug($request->nome);
+                $extension = $imgFile->getClientOriginalExtension();
+                $filename = "{$slug}-" . uniqid() . ".{$extension}";
+                $path = $request->file('imagem')->storeAs('pratos', $filename, 'public');
+                $prato->update(['imagem' => $path]);
             }
 
             DB::commit();
