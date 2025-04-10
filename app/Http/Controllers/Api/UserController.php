@@ -113,7 +113,7 @@ class UserController extends Controller
 
             return response()->json([
                 'message' => 'Informações alteradas com sucesso',
-                'user' => $user->only(['name', 'email', 'phone']),
+                'user' => $user->only(['id', 'name', 'email', 'phone']),
             ], 200);
 
         } catch (ValidationException $e) {
