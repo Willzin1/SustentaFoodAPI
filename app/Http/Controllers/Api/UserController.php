@@ -25,7 +25,7 @@ class UserController extends Controller
      */
     public function index(): JsonResponse
     {
-        $users = $this->user->orderBy('id', 'DESC')->get(['id', 'name', 'email', 'phone']);
+        $users = $this->user->orderBy('id', 'DESC')->get(['id', 'name', 'email', 'phone', 'role']);
         return response()->json($users, 200);
     }
 
@@ -79,7 +79,7 @@ class UserController extends Controller
             ], 404);
         }
 
-        return response()->json($user->only(['id', 'name', 'email', 'phone']), 200);
+        return response()->json($user->only(['id', 'name', 'email', 'phone', 'role']), 200);
     }
 
     /**
