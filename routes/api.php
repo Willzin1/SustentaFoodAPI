@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 // Rotas Públicas
 Route::post('/users', [UserController::class, 'store']);
 Route::post('/login', [TokenController::class, 'store']);
+Route::get('/cardapio', [CardapioController::class, 'index']);
 
 // Rotas Privadas
 Route::middleware('auth:sanctum')->group(function() {
@@ -28,7 +29,6 @@ Route::middleware('auth:sanctum')->group(function() {
     });
 
     Route::prefix('/cardapio')->controller(CardapioController::class)->middleware('checkRole')->group(function() {
-        Route::get('/', 'index');
         Route::post('/', 'store');
         Route::get('/{prato}', 'show');
         Route::put('/{prato}', 'update');
