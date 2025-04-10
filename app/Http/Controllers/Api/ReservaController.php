@@ -25,11 +25,22 @@ class ReservaController extends Controller
      */
     public function index(): JsonResponse
     {
-        $reservas = $this->reserva->with('user')->orderBy('id', 'DESC')->paginate(5, ['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras']);
+        $query = $this->reserva->with('user')->orderBy('id', 'DESC');
 
+        if (request()->has('user_id')) {
+            $query->where('user_id', request('user_id'));
+
+            $reservas = $query->paginate(4, ['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras']);
+            return response()->json($reservas, 200);
+        }
+
+        $reservas = $query->paginate(5, ['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras']);
         return response()->json($reservas, 200);
     }
 
+    /**
+     * Store a newly created resource in storage.
+     */
     public function store(ReservaRequest $request): JsonResponse
     {
         $user = Auth::user();
@@ -95,6 +106,7 @@ class ReservaController extends Controller
     public function show(string $id): JsonResponse
     {
         $reserva = $this->reserva->find($id);
+        $reserva->load('user');
 
         if(!$reserva) {
             return response()->json([
@@ -102,7 +114,7 @@ class ReservaController extends Controller
             ], 404);
         }
 
-        return response()->json($reserva->only(['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras']), 200);
+        return response()->json($reserva->only(['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras', 'user']), 200);
     }
 
     /**
