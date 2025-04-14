@@ -24,7 +24,30 @@ class CardapioController extends Controller
      */
     public function index(): JsonResponse
     {
-        $pratos = Prato::orderBy('id', 'DESC')->paginate(5, ['id', 'nome', 'descricao', 'imagem', 'categoria']);
+        $query = Prato::orderBy('id', 'DESC');
+
+        if (request()->has('search')) {
+            $search = request('search');
+            $filter = request('filter');
+
+            switch ($filter) {
+                case 'Nome':
+                    $query->where('nome', 'like', "%$search%");
+                    break;
+                case 'Descricao':
+                    $query->where('descricao', 'like', "%$search%");
+                    break;
+                case 'Categoria':
+                    $query->where('categoria', 'like', "%$search%");
+                    break;
+                default:
+                $query->where('nome', 'like', "%$search%")
+                ->orWhere('descricao', 'like', "%$search%")
+                ->orWhere('categoria', 'like', "%$search%");
+            };
+        };
+
+        $pratos = $query->paginate(5, ['id', 'nome', 'descricao', 'imagem', 'categoria']);
 
         return response()->json($pratos);
     }
