@@ -24,6 +24,10 @@ class TokenController extends Controller
             return response()->json(['message' => 'E-mail ou senha inválido(a)'], 401);
         }
 
+        if (! $user->hasVerifiedEmail()) {
+            return response()->json(['message' => 'Por favor, verifique e-mail antes de prosseguir.'], 403);
+        }
+
         $token = $user->createToken('api-token')->plainTextToken;
 
         return response()->json([

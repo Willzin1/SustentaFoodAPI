@@ -18,7 +18,7 @@ Route::get('/reservas', [ReservaController::class, 'index']);
 Route::get('/cardapio', [CardapioController::class, 'index']);
 
 // Rotas Privadas
-Route::middleware('auth:sanctum')->group(function() {
+Route::middleware(['auth:sanctum', 'verified'])->group(function() {
     Route::prefix('/users')->controller(UserController::class)->group(function() {
         // Route::get('/', 'index');
         Route::get('/{user}', 'show');
