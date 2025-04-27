@@ -45,6 +45,8 @@ class UserController extends Controller
                 'role' => 'user',
             ]);
 
+            $user->sendEmailVerificationNotification();
+
             DB::commit();
 
             return response()->json([
