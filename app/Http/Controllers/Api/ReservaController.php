@@ -5,11 +5,13 @@ namespace App\Http\Controllers\Api;
 use App\Helpers\ReservasHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ReservaRequest;
+use App\Mail\ConfirmReservation;
 use App\Models\Reserva;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class ReservaController extends Controller
 {
@@ -116,6 +118,13 @@ class ReservaController extends Controller
                 'quantidade_cadeiras' => $request->quantidade_cadeiras,
             ]);
 
+            Mail::to($user->email)->send(new ConfirmReservation([
+                'name' => $user->name,
+                'data' => $reserva->data,
+                'hora' => $reserva->hora,
+                'quantidade_pessoas' => $reserva->quantidade_cadeiras,
+            ]));
+
             DB::commit();
 
             return response()->json([
@@ -127,7 +136,7 @@ class ReservaController extends Controller
             DB::rollBack();
 
             return response()->json([
-                'message' => 'Ocorreu um erro ao fazer reserva',
+                'message' => 'Ocorreu um erro ao realizar reserva',
                 'error' => $e->getMessage()
             ], 400);
         }
