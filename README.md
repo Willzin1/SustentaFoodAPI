@@ -8,7 +8,8 @@ Este é um projeto **API RESTful** desenvolvido com **Laravel 12**, responsável
 
 - PHP 8.3+
 - Laravel 12
-- MariaDB
+- mySQL
+- Docker
 - Laravel Sanctum (Autenticação via Token)
 
 ---
@@ -26,14 +27,16 @@ A API está organizada com os seguintes módulos principais:
 - **Reservas**
   - Criação de reservas
   - Verificação de disponibilidade de mesas
+  - Envio de e-mail de confirmação de reserva
   - Listagem e gerenciamento de reservas (para administrador)
 - **Usuários**
   - Consulta de dados do usuário autenticado
   - Edição e exclusão de usuário.
+  - Envio de e-mail de confirmação de criação de conta
 
 ---
 
-## 🔐 Autenticação
+##  Autenticação
 
 A API utiliza o **Laravel Sanctum** para autenticação com tokens. Após o login, o cliente receberá um token para autenticar as próximas requisições.
 
