@@ -11,11 +11,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 // Rotas Públicas
-Route::post('/users', [UserController::class, 'store']);
-Route::get('/users', [UserController::class, 'index']);
-Route::post('/login', [TokenController::class, 'store']);
-Route::get('/reservas', [ReservaController::class, 'index']);
-Route::get('/cardapio', [CardapioController::class, 'index']);
+    Route::post('/users', [UserController::class, 'store']);
+    Route::get('/users', [UserController::class, 'index']);
+    Route::post('/login', [TokenController::class, 'store']);
+    Route::get('/reservas', [ReservaController::class, 'index']);
+    Route::post('/reservas/notLoggedUser', [ReservaController::class, 'notLoggedUserStore']);
+    Route::get('/cardapio', [CardapioController::class, 'index']);
 
 // Rotas Privadas
 Route::middleware(['auth:sanctum', 'verified'])->group(function() {

@@ -20,6 +20,9 @@ class Reserva extends Model
         'data',
         'hora',
         'quantidade_cadeiras',
+        'name',
+        'email',
+        'phone'
     ];
 
     /**

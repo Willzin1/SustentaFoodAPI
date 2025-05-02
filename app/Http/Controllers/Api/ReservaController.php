@@ -95,11 +95,7 @@ class ReservaController extends Controller
                 ], 400);
             }
 
-            $reservationLimit = ReservasHelper::checkReservationLimit(
-                $user->id
-            );
-
-            if (! $reservationLimit) {
+            if ($user && !ReservasHelper::checkReservationLimit($user->id)) {
                 return response()->json([
                     'message' => 'Somente 4 reservas por usuário'
                 ], 400);
@@ -116,14 +112,17 @@ class ReservaController extends Controller
                 'data' => $request->data,
                 'hora' => $request->hora,
                 'quantidade_cadeiras' => $request->quantidade_cadeiras,
+                'name' => $user->name,
+                'email' => $user->email,
+                'phone' => $user->phone
             ]);
 
-            Mail::to($user->email)->send(new ConfirmReservation([
-                'name' => $user->name,
-                'data' => $reserva->data,
-                'hora' => $reserva->hora,
-                'quantidade_pessoas' => $reserva->quantidade_cadeiras,
-            ]));
+            // Mail::to($user->email)->send(new ConfirmReservation([
+            //     'name' => $user->name,
+            //     'data' => $reserva->data,
+            //     'hora' => $reserva->hora,
+            //     'quantidade_pessoas' => $reserva->quantidade_cadeiras,
+            // ]));
 
             DB::commit();
 
@@ -136,8 +135,8 @@ class ReservaController extends Controller
             DB::rollBack();
 
             return response()->json([
-                'message' => 'Ocorreu um erro ao realizar reserva',
-                'error' => $e->getMessage()
+                'error' => 'Ocorreu um erro ao realizar reserva',
+                'message' => $e->getMessage()
             ], 400);
         }
     }
@@ -249,6 +248,63 @@ class ReservaController extends Controller
             return response()->json([
                 'message' => 'Erro ao excluir reserva',
                 'error' => $e->getMessage()
+            ], 400);
+        }
+    }
+
+    public function notLoggedUserStore(ReservaRequest $request): JsonResponse
+    {
+        try {
+            DB::beginTransaction();
+
+            $isAvailable = ReservasHelper::checkAvailability(
+                $request->data,
+                $request->hora,
+                $request->quantidade_cadeiras
+            );
+
+            if (! $isAvailable) {
+                return response()->json([
+                    'message' => 'Reserva indisponível para esse horário.'
+                ], 400);
+            }
+
+            if ($request->quantidade_cadeiras > 12) {
+                return response()->json([
+                    'message' => 'Reservas acima de 12 pessoas devem ser feitas diretamente com o restaurante.'
+                ], 400);
+            }
+
+            $reserva = $this->reserva->create([
+                'user_id' => null,
+                'data' => $request->data,
+                'hora' => $request->hora,
+                'quantidade_cadeiras' => $request->quantidade_cadeiras,
+                'name' => $request->name,
+                'email' => $request->email,
+                'phone' => $request->phone
+            ]);
+
+            // Mail::to($user->email)->send(new ConfirmReservation([
+            //     'name' => $user->name,
+            //     'data' => $reserva->data,
+            //     'hora' => $reserva->hora,
+            //     'quantidade_pessoas' => $reserva->quantidade_cadeiras,
+            // ]));
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Reserva feita com sucesso!',
+                'reserva' => $reserva->only(['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras'])
+            ], 201);
+
+        } catch(Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'error' => 'Ocorreu um erro ao realizar reserva',
+                'message' => $e->getMessage()
             ], 400);
         }
     }
