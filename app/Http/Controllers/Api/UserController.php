@@ -36,7 +36,7 @@ class UserController extends Controller
     {
         DB::beginTransaction();
 
-        try{
+        try {
             $user = $this->user->create([
                 'name' => $request->name,
                 'email' => $request->email,
@@ -54,7 +54,7 @@ class UserController extends Controller
                 'user' => $user->only(['id', 'name', 'email', 'phone', 'role']),
             ], 201);
 
-        }catch(Exception $e){
+        } catch(Exception $e) {
             DB::rollBack();
 
             $errors = [
@@ -75,7 +75,7 @@ class UserController extends Controller
     {
         $user = $this->user->find($id);
 
-        if(!$user) {
+        if (!$user) {
             return response()->json([
                 'message' => 'Usuário não encontrado'
             ], 404);
@@ -90,7 +90,8 @@ class UserController extends Controller
     public function update(Request $request, String $id): JsonResponse
     {
         $user = $this->user->find($id);
-        if(!$user) {
+
+        if (!$user) {
             return response()->json(['message' => 'Usuário não encontrado'], 404);
         }
 
@@ -128,7 +129,7 @@ class UserController extends Controller
                 'error' => $errors
             ], 422);
 
-        } catch (Exception $e){
+        } catch (Exception $e) {
             DB::rollBack();
 
             return response()->json([
@@ -144,7 +145,8 @@ class UserController extends Controller
     public function destroy(String $id): JsonResponse
     {
         $user = User::find($id);
-        if(!$user) {
+
+        if (!$user) {
             return response()->json(['message' => 'Usuário não encontrado'], 404);
         }
 

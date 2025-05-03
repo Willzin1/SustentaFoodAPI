@@ -68,7 +68,7 @@ class ReservaController extends Controller
             }
         }
 
-        $reservas = $query->paginate(5, ['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras']);
+        $reservas = $query->paginate(5, ['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras', 'name', 'email', 'phone']);
 
         return response()->json($reservas, 200);
     }
@@ -128,7 +128,7 @@ class ReservaController extends Controller
 
             return response()->json([
                 'message' => 'Reserva feita com sucesso!',
-                'reserva' => $reserva->only(['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras'])
+                'reserva' => $reserva->only(['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras', 'name', 'email', 'phone'])
             ], 201);
 
         } catch(Exception $e) {
@@ -149,13 +149,13 @@ class ReservaController extends Controller
         $reserva = $this->reserva->find($id);
         $reserva->load('user');
 
-        if(!$reserva) {
+        if (!$reserva) {
             return response()->json([
                 'message' => 'Reserva não encontrada'
             ], 404);
         }
 
-        return response()->json($reserva->only(['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras', 'user']), 200);
+        return response()->json($reserva->only(['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras', 'user', 'name', 'email', 'phone']), 200);
     }
 
     /**
