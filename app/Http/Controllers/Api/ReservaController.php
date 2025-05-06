@@ -117,12 +117,12 @@ class ReservaController extends Controller
                 'phone' => $user->phone
             ]);
 
-            // Mail::to($user->email)->send(new ConfirmReservation([
-            //     'name' => $user->name,
-            //     'data' => $reserva->data,
-            //     'hora' => $reserva->hora,
-            //     'quantidade_pessoas' => $reserva->quantidade_cadeiras,
-            // ]));
+            Mail::to($user->email)->send(new ConfirmReservation([
+                'name' => $user->name,
+                'data' => $reserva->data,
+                'hora' => $reserva->hora,
+                'quantidade_pessoas' => $reserva->quantidade_cadeiras,
+            ]));
 
             DB::commit();
 
@@ -285,12 +285,12 @@ class ReservaController extends Controller
                 'phone' => $request->phone
             ]);
 
-            // Mail::to($user->email)->send(new ConfirmReservation([
-            //     'name' => $user->name,
-            //     'data' => $reserva->data,
-            //     'hora' => $reserva->hora,
-            //     'quantidade_pessoas' => $reserva->quantidade_cadeiras,
-            // ]));
+            Mail::to($request->email)->send(new ConfirmReservation([
+                'name' => $request->name,
+                'data' => $reserva->data,
+                'hora' => $reserva->hora,
+                'quantidade_pessoas' => $reserva->quantidade_cadeiras,
+            ]));
 
             DB::commit();
 
