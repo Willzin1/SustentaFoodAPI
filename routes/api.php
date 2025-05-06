@@ -45,7 +45,6 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function() {
     Route::delete('/logout', [TokenController::class, 'destroy']);
 });
 
-
 // Rota que o usuário acessa via link do e-mail (GET)
 Route::get('/email/verify/{id}/{hash}', function ($id, $hash) {
     $user = User::findOrFail($id);
@@ -55,18 +54,18 @@ Route::get('/email/verify/{id}/{hash}', function ($id, $hash) {
     }
 
     $user->markEmailAsVerified();
-    return redirect('http://127.0.0.1:8000/login');
+
+    return redirect('http://127.0.0.1:8000/verify');
 })->middleware(['signed'])->name('verification.verify');
 
 // Rota para reenviar o link de verificação (POST)
 Route::post('/email/verification-notification', function (Request $request) {
-    // Verifica se o usuário já confirmou o e-mail
+
     if ($request->user()->hasVerifiedEmail()) {
         return response()->json(['message' => 'Seu e-mail já foi verificado.'], 400);
     }
 
-    // Envia o link de verificação
     $request->user()->sendEmailVerificationNotification();
 
     return response()->json(['message' => 'Link de verificação enviado novamente!']);
-})->middleware(['auth:sanctum'])->name('verification.send');
+})->name('verification.send');

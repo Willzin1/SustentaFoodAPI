@@ -25,7 +25,7 @@ class TokenController extends Controller
         }
 
         if (! $user->hasVerifiedEmail()) {
-            return response()->json(['message' => 'Por favor, verifique e-mail antes de prosseguir.'], 403);
+            return response()->json(['message' => 'Por favor, verifique seu e-mail'], 403);
         }
 
         $token = $user->createToken('api-token')->plainTextToken;
