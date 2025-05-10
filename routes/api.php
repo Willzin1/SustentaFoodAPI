@@ -3,7 +3,7 @@
 use App\Http\Controllers\Api\CardapioController;
 use App\Http\Controllers\Api\ReservaController;
 use App\Http\Controllers\Api\TokenController;
-use App\Http\Controllers\api\UserController;
+use App\Http\Controllers\Api\UserController;
 use App\Models\User;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
