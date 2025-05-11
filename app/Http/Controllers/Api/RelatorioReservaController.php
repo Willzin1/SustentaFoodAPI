@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Reserva;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class RelatorioReservaController extends Controller
 {
@@ -18,17 +17,8 @@ class RelatorioReservaController extends Controller
 
     public function getReservationsByWeek()
     {
-        $porDia = Reserva::selectRaw('DAYNAME(data) as dia, COUNT(*) as total')
-        ->whereBetween('data', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
-        ->groupBy(DB::raw('DAYNAME(data)'))
-        ->orderByRaw('FIELD(DAYNAME(data), "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")')
-        ->get();
-
         $total = Reserva::whereBetween('data', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->count();
-        return response()->json([
-            'total' => $total,
-            'porDia' => $porDia
-        ]);
+        return response()->json(['total' => $total]);
     }
 
     public function getReservationsByMonth()
