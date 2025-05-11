@@ -10,31 +10,22 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // Rotas Públicas
-    Route::post('/users', [UserController::class, 'store']);
-    Route::get('/users', [UserController::class, 'index']);
-    Route::post('/login', [TokenController::class, 'store']);
-    Route::get('/reservas', [ReservaController::class, 'index']);
-    Route::post('/reservas/notLoggedUser', [ReservaController::class, 'notLoggedUserStore']);
-    Route::get('/cardapio', [CardapioController::class, 'index']);
-
-    Route::prefix('/relatorios/reservas')->group(function () {
-        Route::get('/dia', [RelatorioReservaController::class, 'getReservationsByDay']);
-        Route::get('/semana', [RelatorioReservaController::class, 'getReservationsByWeek']);
-        Route::get('/mes', [RelatorioReservaController::class, 'getReservationsByMonth']);
-        Route::get('/diaSemana', [RelatorioReservaController::class, 'getReservationsByWeekDay']);
-    });
+Route::post('/users', [UserController::class, 'store']);
+Route::post('/login', [TokenController::class, 'store']);
+Route::post('/reservas/notLoggedUser', [ReservaController::class, 'notLoggedUserStore']);
+Route::get('/cardapio', [CardapioController::class, 'index']);
 
 // Rotas Privadas
 Route::middleware(['auth:sanctum', 'verified'])->group(function() {
     Route::prefix('/users')->controller(UserController::class)->group(function() {
-        // Route::get('/', 'index');
+        Route::get('/', 'index');
         Route::get('/{user}', 'show');
         Route::put('/{user}', 'update');
         Route::delete('/{user}', 'destroy');
     });
 
     Route::prefix('/reservas')->controller(ReservaController::class)->group(function() {
-        // Route::get('/', 'index');
+        Route::get('/', 'index');
         Route::post('/', 'store');
         Route::get('/{reserva}', 'show')->middleware('checkReserva');
         Route::put('/{reserva}', 'update')->middleware('checkReserva');
@@ -49,6 +40,13 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function() {
     });
 
     Route::delete('/logout', [TokenController::class, 'destroy']);
+
+    Route::prefix('/relatorios/reservas')->group(function () {
+        Route::get('/dia', [RelatorioReservaController::class, 'getReservationsByDay']);
+        Route::get('/semana', [RelatorioReservaController::class, 'getReservationsByWeek']);
+        Route::get('/mes', [RelatorioReservaController::class, 'getReservationsByMonth']);
+        Route::get('/diaSemana', [RelatorioReservaController::class, 'getReservationsByWeekDay']);
+    });
 });
 
 // Rota que o usuário acessa via link do e-mail (GET)
