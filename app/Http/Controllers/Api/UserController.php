@@ -13,7 +13,6 @@ use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
 {
-
     public readonly User $user;
     public function __construct()
     {
