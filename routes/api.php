@@ -1,13 +1,12 @@
 <?php
 
 use App\Http\Controllers\Api\CardapioController;
+use App\Http\Controllers\Api\RelatorioReservaController;
 use App\Http\Controllers\Api\ReservaController;
 use App\Http\Controllers\Api\TokenController;
 use App\Http\Controllers\Api\UserController;
 use App\Models\User;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 // Rotas Públicas
@@ -17,6 +16,12 @@ use Illuminate\Support\Facades\Route;
     Route::get('/reservas', [ReservaController::class, 'index']);
     Route::post('/reservas/notLoggedUser', [ReservaController::class, 'notLoggedUserStore']);
     Route::get('/cardapio', [CardapioController::class, 'index']);
+
+    Route::prefix('/relatorios/reservas')->group(function () {
+        Route::get('/dia', [RelatorioReservaController::class, 'getReservationsByDay']);
+        Route::get('/semana', [RelatorioReservaController::class, 'getReservationsByWeek']);
+        Route::get('/mes', [RelatorioReservaController::class, 'getReservationsByMonth']);
+    });
 
 // Rotas Privadas
 Route::middleware(['auth:sanctum', 'verified'])->group(function() {
