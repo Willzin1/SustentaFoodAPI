@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Route;
         Route::get('/dia', [RelatorioReservaController::class, 'getReservationsByDay']);
         Route::get('/semana', [RelatorioReservaController::class, 'getReservationsByWeek']);
         Route::get('/mes', [RelatorioReservaController::class, 'getReservationsByMonth']);
+        Route::get('/diaSemana', [RelatorioReservaController::class, 'getReservationsByWeekDay']);
     });
 
 // Rotas Privadas
