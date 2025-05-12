@@ -6,26 +6,43 @@ use App\Http\Controllers\Controller;
 use App\Models\Reserva;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class RelatorioReservaController extends Controller
 {
     public function getReservationsByDay(): JsonResponse
     {
-        $total = Reserva::whereDate('data', Carbon::today())->count();
-        return response()->json(['total' => $total]);
+        $query = Reserva::whereDate('data', Carbon::today())->orderBy('data');
+        $total = $query->count();
+
+        $todayReservations = $query->paginate(5, ['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras', 'name', 'email']);
+
+        return response()->json(['total' => $total, 'reservas' => $todayReservations]);
     }
 
     public function getReservationsByWeek(): JsonResponse
     {
-        $total = Reserva::whereBetween('data', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->count();
-        return response()->json(['total' => $total]);
+        $startWeek = Carbon::now()->startOfWeek();
+        $endWeek = Carbon::now()->endOfWeek();
+
+        $query = Reserva::whereBetween('data', [$startWeek, $endWeek])->orderBy('data');
+        $total = $query->count();
+
+        $weekReservations = $query->paginate(5, ['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras', 'name', 'email']);
+
+        return response()->json(['total' => $total, 'reservas' => $weekReservations], 200);
     }
 
-    public function getReservationsByMonth()
+    public function getReservationsByMonth(): JsonResponse
     {
-        $total = Reserva::whereBetween('data', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])->count();
-        return response()->json(['total' => $total]);
+        $startMonth = Carbon::now()->startOfMonth();
+        $endMonth = Carbon::now()->endOfMonth();
+
+        $query = Reserva::whereBetween('data', [$startMonth, $endMonth])->orderBy('data');
+        $total = $query->count();
+
+        $monthReservations = $query->paginate(5, ['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras', 'name', 'email']);
+
+        return response()->json(['total' => $total, 'reservas' => $monthReservations], 200);
     }
 
     public function getReservationsByWeekDay(): JsonResponse
@@ -40,6 +57,6 @@ class RelatorioReservaController extends Controller
                 return $item;
             });
 
-        return response()->json($data);
+        return response()->json($data, 200);
     }
 }
