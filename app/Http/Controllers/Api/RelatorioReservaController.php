@@ -11,7 +11,7 @@ class RelatorioReservaController extends Controller
 {
     public function getReservationsByDay(): JsonResponse
     {
-        $query = Reserva::whereDate('data', Carbon::today())->orderBy('data');
+        $query = Reserva::with('user')->whereDate('data', Carbon::today())->orderBy('data');
         $total = $query->count();
 
         $todayReservations = $query->paginate(5, ['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras', 'name', 'email']);
@@ -24,7 +24,7 @@ class RelatorioReservaController extends Controller
         $startWeek = Carbon::now()->startOfWeek();
         $endWeek = Carbon::now()->endOfWeek();
 
-        $query = Reserva::whereBetween('data', [$startWeek, $endWeek])->orderBy('data');
+        $query = Reserva::with('user')->whereBetween('data', [$startWeek, $endWeek])->orderBy('data');
         $total = $query->count();
 
         $weekReservations = $query->paginate(5, ['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras', 'name', 'email']);
@@ -37,7 +37,7 @@ class RelatorioReservaController extends Controller
         $startMonth = Carbon::now()->startOfMonth();
         $endMonth = Carbon::now()->endOfMonth();
 
-        $query = Reserva::whereBetween('data', [$startMonth, $endMonth])->orderBy('data');
+        $query = Reserva::with('user')->whereBetween('data', [$startMonth, $endMonth])->orderBy('data');
         $total = $query->count();
 
         $monthReservations = $query->paginate(5, ['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras', 'name', 'email']);
@@ -47,7 +47,7 @@ class RelatorioReservaController extends Controller
 
     public function getReservationsByWeekDay(): JsonResponse
     {
-        $data = Reserva::selectRaw('DATE(data) as dia, COUNT(*) as total')
+        $data = Reserva::with('user')->selectRaw('DATE(data) as dia, COUNT(*) as total')
             ->whereMonth('data', Carbon::now()->month)
             ->groupBy('dia')
             ->orderBy('dia')
