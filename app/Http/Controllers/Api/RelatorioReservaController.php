@@ -17,7 +17,40 @@ class RelatorioReservaController extends Controller
 
         $total = $query->count();
 
-        ReservasHelper::applySearchFilter(request(), $query);
+        if ($request->has('search')) {
+        $search = $request->input('search');
+        $filter = $request->input('filter');
+
+        switch ($filter) {
+            case 'ID':
+                $query->where('id', 'like', "%$search%");
+                break;
+            case 'Nome':
+                $query->whereHas('user', function ($q) use ($search) {
+                    $q->where('name', 'like', "%$search%");
+                });
+                break;
+            case 'Data':
+                $query->where('data', 'like', "%$search%");
+                break;
+            case 'Hora':
+                $query->where('hora', 'like', "%$search%");
+                break;
+            case 'Quantidade':
+                $query->where('quantidade_cadeiras', 'like', "%$search%");
+                break;
+            default:
+                $query->where(function ($q) use ($search) {
+                    $q->where('id', 'like', "%$search%")
+                        ->orWhere('data', 'like', "%$search%")
+                        ->orWhere('hora', 'like', "%$search%")
+                        ->orWhere('quantidade_cadeiras', 'like', "%$search%")
+                        ->orWhereHas('user', function ($q2) use ($search) {
+                            $q2->where('name', 'like', "%$search%");
+                        });
+                });
+        }
+    }
 
         $todayReservations = $query->paginate(5, ['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras', 'name', 'email']);
 
