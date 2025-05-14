@@ -70,7 +70,7 @@ class ReservaController extends Controller
 
         $reservas = $query->paginate(5, ['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras', 'name', 'email', 'phone']);
 
-        return response()->json(['reservas' => $reservas], 200);
+        return response()->json($reservas, 200);
     }
 
     /**
