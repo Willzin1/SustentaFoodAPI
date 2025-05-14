@@ -9,7 +9,6 @@ use App\Mail\ConfirmReservation;
 use App\Models\Reserva;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -26,15 +25,48 @@ class ReservaController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): JsonResponse
+    public function index(): JsonResponse
     {
         $query = $this->reserva->with('user')->orderBy('id', 'DESC');
 
-        if ($request->has('user_id')) {
+        if (request()->has('user_id')) {
             $query->where('user_id', request('user_id'));
         }
 
-        ReservasHelper::applySearchFilter($request, $query);
+        if (request()->has('search')) {
+            $search = request('search');
+            $filter = request('filter');
+
+            switch ($filter) {
+                case 'ID':
+                    $query->where('id', 'like', "%$search%");
+                    break;
+                case 'Nome':
+                    $query->whereHas('user', function ($q) use ($search) {
+                        $q->where('name', 'like', "%$search%");
+                    });
+                    break;
+                case 'Data':
+                    $query->where('data', 'like', "%$search%");
+                    break;
+                case 'Hora':
+                    $query->where('hora', 'like', "%$search%");
+                    break;
+                case 'Quantidade':
+                    $query->where('quantidade_cadeiras', 'like', "%$search%");
+                    break;
+                default:
+                    $query->where(function ($q) use ($search) {
+                        $q->where('id', 'like', "%$search%")
+                          ->orWhere('data', 'like', "%$search%")
+                          ->orWhere('hora', 'like', "%$search%")
+                          ->orWhere('quantidade_cadeiras', 'like', "%$search%")
+                          ->orWhereHas('user', function ($q2) use ($search) {
+                              $q2->where('name', 'like', "%$search%");
+                            });
+                    });
+            }
+        }
 
         $reservas = $query->paginate(5, ['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras', 'name', 'email', 'phone']);
 
