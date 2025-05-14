@@ -17,7 +17,7 @@ class RelatorioReservaController extends Controller
 
         $total = $query->count();
 
-        ReservasHelper::applySearchFilter($request, $query);
+        ReservasHelper::applySearchFilter(request(), $query);
 
         $todayReservations = $query->paginate(5, ['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras', 'name', 'email']);
 
