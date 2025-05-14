@@ -41,11 +41,11 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function() {
 
     Route::delete('/logout', [TokenController::class, 'destroy']);
 
-    Route::prefix('/relatorios/reservas')->group(function () {
-        Route::get('/dia', [RelatorioReservaController::class, 'getReservationsByDay']);
-        Route::get('/semana', [RelatorioReservaController::class, 'getReservationsByWeek']);
-        Route::get('/mes', [RelatorioReservaController::class, 'getReservationsByMonth']);
-        Route::get('/diaSemana', [RelatorioReservaController::class, 'getReservationsByWeekDay']);
+    Route::prefix('/relatorios/reservas')->controller(RelatorioReservaController::class)->group(function () {
+        Route::get('/dia', 'getReservationsByDay');
+        Route::get('/semana', 'getReservationsByWeek');
+        Route::get('/mes', 'getReservationsByMonth');
+        Route::get('/diaSemana', 'getReservationsByWeekDay');
     });
 });
 
