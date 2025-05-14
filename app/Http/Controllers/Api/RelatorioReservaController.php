@@ -2,62 +2,59 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Helpers\ReservasHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Reserva;
 use Carbon\Carbon;
-use Illuminate\Http\Client\Request;
 use Illuminate\Http\JsonResponse;
 
 class RelatorioReservaController extends Controller
 {
-    public function getReservationsByDay(Request $request): JsonResponse
+    public function getReservationsByDay(): JsonResponse
     {
         $query = Reserva::with('user')->whereDate('data', Carbon::today())->orderBy('data');
-
         $total = $query->count();
 
-        if ($request->has('search')) {
-        $search = $request->input('search');
-        $filter = $request->input('filter');
+        if (request()->has('search')) {
+            $search = request('search');
+            $filter = request('filter');
 
-        switch ($filter) {
-            case 'ID':
-                $query->where('id', 'like', "%$search%");
-                break;
-            case 'Nome':
-                $query->whereHas('user', function ($q) use ($search) {
-                    $q->where('name', 'like', "%$search%");
-                });
-                break;
-            case 'Data':
-                $query->where('data', 'like', "%$search%");
-                break;
-            case 'Hora':
-                $query->where('hora', 'like', "%$search%");
-                break;
-            case 'Quantidade':
-                $query->where('quantidade_cadeiras', 'like', "%$search%");
-                break;
-            default:
-                $query->where(function ($q) use ($search) {
-                    $q->where('id', 'like', "%$search%")
-                        ->orWhere('data', 'like', "%$search%")
-                        ->orWhere('hora', 'like', "%$search%")
-                        ->orWhere('quantidade_cadeiras', 'like', "%$search%")
-                        ->orWhereHas('user', function ($q2) use ($search) {
-                            $q2->where('name', 'like', "%$search%");
-                        });
-                });
+            switch ($filter) {
+                case 'ID':
+                    $query->where('id', 'like', "%$search%");
+                    break;
+                case 'Nome':
+                    $query->whereHas('user', function ($q) use ($search) {
+                        $q->where('name', 'like', "%$search%");
+                    });
+                    break;
+                case 'Data':
+                    $query->where('data', 'like', "%$search%");
+                    break;
+                case 'Hora':
+                    $query->where('hora', 'like', "%$search%");
+                    break;
+                case 'Quantidade':
+                    $query->where('quantidade_cadeiras', 'like', "%$search%");
+                    break;
+                default:
+                    $query->where(function ($q) use ($search) {
+                        $q->where('id', 'like', "%$search%")
+                          ->orWhere('data', 'like', "%$search%")
+                          ->orWhere('hora', 'like', "%$search%")
+                          ->orWhere('quantidade_cadeiras', 'like', "%$search%")
+                          ->orWhereHas('user', function ($q2) use ($search) {
+                              $q2->where('name', 'like', "%$search%");
+                            });
+                    });
+            }
         }
-    }
 
         $todayReservations = $query->paginate(5, ['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras', 'name', 'email']);
 
         return response()->json(['total' => $total, 'reservas' => $todayReservations]);
     }
 
-    public function getReservationsByWeek(Request $request): JsonResponse
+    public function getReservationsByWeek(): JsonResponse
     {
         $startWeek = Carbon::now()->startOfWeek();
         $endWeek = Carbon::now()->endOfWeek();
@@ -65,14 +62,49 @@ class RelatorioReservaController extends Controller
         $query = Reserva::with('user')->whereBetween('data', [$startWeek, $endWeek])->orderBy('data');
         $total = $query->count();
 
-        ReservasHelper::applySearchFilter($request, $query);
+
+
+        if (request()->has('search')) {
+            $search = request('search');
+            $filter = request('filter');
+
+            switch ($filter) {
+                case 'ID':
+                    $query->where('id', 'like', "%$search%");
+                    break;
+                case 'Nome':
+                    $query->whereHas('user', function ($q) use ($search) {
+                        $q->where('name', 'like', "%$search%");
+                    });
+                    break;
+                case 'Data':
+                    $query->where('data', 'like', "%$search%");
+                    break;
+                case 'Hora':
+                    $query->where('hora', 'like', "%$search%");
+                    break;
+                case 'Quantidade':
+                    $query->where('quantidade_cadeiras', 'like', "%$search%");
+                    break;
+                default:
+                    $query->where(function ($q) use ($search) {
+                        $q->where('id', 'like', "%$search%")
+                          ->orWhere('data', 'like', "%$search%")
+                          ->orWhere('hora', 'like', "%$search%")
+                          ->orWhere('quantidade_cadeiras', 'like', "%$search%")
+                          ->orWhereHas('user', function ($q2) use ($search) {
+                              $q2->where('name', 'like', "%$search%");
+                            });
+                    });
+            }
+        }
 
         $weekReservations = $query->paginate(5, ['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras', 'name', 'email']);
 
         return response()->json(['total' => $total, 'reservas' => $weekReservations], 200);
     }
 
-    public function getReservationsByMonth(Request $request): JsonResponse
+    public function getReservationsByMonth(): JsonResponse
     {
         $startMonth = Carbon::now()->startOfMonth();
         $endMonth = Carbon::now()->endOfMonth();
@@ -80,7 +112,41 @@ class RelatorioReservaController extends Controller
         $query = Reserva::with('user')->whereBetween('data', [$startMonth, $endMonth])->orderBy('data');
         $total = $query->count();
 
-        ReservasHelper::applySearchFilter($request, $query);
+
+        if (request()->has('search')) {
+            $search = request('search');
+            $filter = request('filter');
+
+            switch ($filter) {
+                case 'ID':
+                    $query->where('id', 'like', "%$search%");
+                    break;
+                case 'Nome':
+                    $query->whereHas('user', function ($q) use ($search) {
+                        $q->where('name', 'like', "%$search%");
+                    });
+                    break;
+                case 'Data':
+                    $query->where('data', 'like', "%$search%");
+                    break;
+                case 'Hora':
+                    $query->where('hora', 'like', "%$search%");
+                    break;
+                case 'Quantidade':
+                    $query->where('quantidade_cadeiras', 'like', "%$search%");
+                    break;
+                default:
+                    $query->where(function ($q) use ($search) {
+                        $q->where('id', 'like', "%$search%")
+                          ->orWhere('data', 'like', "%$search%")
+                          ->orWhere('hora', 'like', "%$search%")
+                          ->orWhere('quantidade_cadeiras', 'like', "%$search%")
+                          ->orWhereHas('user', function ($q2) use ($search) {
+                              $q2->where('name', 'like', "%$search%");
+                            });
+                    });
+            }
+        }
 
         $monthReservations = $query->paginate(5, ['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras', 'name', 'email']);
 
