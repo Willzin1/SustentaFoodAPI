@@ -39,8 +39,8 @@ class ReservasHelper
     public static function applySearchFilter($request, $query)
     {
              if ($request->has('search')) {
-            $search = $request('search');
-            $filter = $request('filter');
+            $search = $request->input('search');
+            $filter = $request->input('filter');
 
             switch ($filter) {
                 case 'ID':
