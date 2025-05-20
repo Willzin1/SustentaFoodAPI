@@ -23,7 +23,7 @@ class RelatorioReservaController extends Controller
 
         ReservasHelper::applySearchFilter($request, $query);
 
-        $todayReservations = $query->paginate(5, ['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras', 'name', 'email']);
+        $todayReservations = $query->paginate(5, ['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras', 'name', 'email', 'status']);
 
         return response()->json(['total' => $total, 'confirmadas' => $confirmed, 'pendentes' => $pending, 'canceladas' => $canceled, 'reservas' => $todayReservations], 200);
     }
@@ -42,7 +42,7 @@ class RelatorioReservaController extends Controller
         ReservasHelper::applySearchFilter($request, $query);
         $days = ReservasHelper::getWeekdayReservations($query->get());
 
-        $weekReservations = $query->paginate(5, ['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras', 'name', 'email']);
+        $weekReservations = $query->paginate(5, ['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras', 'name', 'email', 'status']);
 
         return response()->json(['total' => $total, 'confirmadas' => $confirmed, 'pendentes' => $pending, 'canceladas' => $canceled, 'dias' => $days, 'reservas' => $weekReservations], 200);
     }
@@ -61,7 +61,7 @@ class RelatorioReservaController extends Controller
         ReservasHelper::applySearchFilter($request, $query);
         $week = ReservasHelper::getWeekReservations($query->get());
 
-        $monthReservations = $query->paginate(5, ['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras', 'name', 'email']);
+        $monthReservations = $query->paginate(5, ['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras', 'name', 'email', 'status']);
 
         return response()->json(['total' => $total, 'confirmadas' => $confirmed, 'pendentes' => $pending, 'canceladas' => $canceled, 'semanas' => $week, 'reservas' => $monthReservations], 200);
     }
