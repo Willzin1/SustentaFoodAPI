@@ -127,7 +127,7 @@ class ReservaController extends Controller
             ], 404);
         }
 
-        return response()->json($reserva->only(['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras', 'user', 'name', 'email', 'phone']), 200);
+        return response()->json($reserva->only(['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras', 'user', 'name', 'email', 'phone', 'status']), 200);
     }
 
     /**
@@ -254,7 +254,9 @@ class ReservaController extends Controller
                 'quantidade_cadeiras' => $request->quantidade_cadeiras,
                 'name' => $request->name,
                 'email' => $request->email,
-                'phone' => $request->phone
+                'phone' => $request->phone,
+                'confirmacao_token' => Str::random(32),
+                'status' => 'pendente'
             ]);
 
             Mail::to($request->email)->send(new ConfirmReservation([
@@ -262,13 +264,14 @@ class ReservaController extends Controller
                 'data' => $reserva->data,
                 'hora' => $reserva->hora,
                 'quantidade_pessoas' => $reserva->quantidade_cadeiras,
+                'link' => url("/api/confirmar-reserva/{$reserva->confirmacao_token}")
             ]));
 
             DB::commit();
 
             return response()->json([
                 'message' => 'Reserva feita com sucesso!',
-                'reserva' => $reserva->only(['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras'])
+                'reserva' => $reserva->only(['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras', 'status'])
             ], 201);
 
         } catch(Exception $e) {
