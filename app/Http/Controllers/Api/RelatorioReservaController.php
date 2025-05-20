@@ -13,14 +13,19 @@ class RelatorioReservaController extends Controller
 {
     public function getReservationsByDay(Request $request): JsonResponse
     {
-        $query = Reserva::with('user')->whereDate('data', Carbon::today())->orderBy('data');
+        $date = Carbon::today();
+
+        $query = Reserva::with('user')->whereDate('data', $date)->orderBy('data');
+        $confirmed = Reserva::whereDate('data', $date)->where('status', 'confirmada')->count();
+        $pending = Reserva::whereDate('data', $date)->where('status', 'pendente')->count();
+        $canceled = Reserva::whereDate('data', $date)->where('status', 'cancelada')->count();
         $total = $query->count();
 
         ReservasHelper::applySearchFilter($request, $query);
 
         $todayReservations = $query->paginate(5, ['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras', 'name', 'email']);
 
-        return response()->json(['total' => $total, 'reservas' => $todayReservations]);
+        return response()->json(['total' => $total, 'confirmadas' => $confirmed, 'pendentes' => $pending, 'canceladas' => $canceled, 'reservas' => $todayReservations], 200);
     }
 
     public function getReservationsByWeek(Request $request): JsonResponse
@@ -29,13 +34,17 @@ class RelatorioReservaController extends Controller
         $endWeek = Carbon::now()->endOfWeek();
 
         $query = Reserva::with('user')->whereBetween('data', [$startWeek, $endWeek])->orderBy('data');
+        $confirmed = Reserva::whereBetween('data', [$startWeek, $endWeek])->where('status', 'confirmada')->count();
+        $pending = Reserva::whereBetween('data', [$startWeek, $endWeek])->where('status', 'pendente')->count();
+        $canceled = Reserva::whereBetween('data', [$startWeek, $endWeek])->where('status', 'cancelada')->count();
         $total = $query->count();
 
         ReservasHelper::applySearchFilter($request, $query);
+        $days = ReservasHelper::getWeekdayReservations($query->get());
 
         $weekReservations = $query->paginate(5, ['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras', 'name', 'email']);
 
-        return response()->json(['total' => $total, 'reservas' => $weekReservations], 200);
+        return response()->json(['total' => $total, 'confirmadas' => $confirmed, 'pendentes' => $pending, 'canceladas' => $canceled, 'dias' => $days, 'reservas' => $weekReservations], 200);
     }
 
     public function getReservationsByMonth(Request $request): JsonResponse
@@ -44,27 +53,16 @@ class RelatorioReservaController extends Controller
         $endMonth = Carbon::now()->endOfMonth();
 
         $query = Reserva::with('user')->whereBetween('data', [$startMonth, $endMonth])->orderBy('data');
+        $confirmed = Reserva::whereBetween('data', [$startMonth, $endMonth])->where('status', 'confirmada')->count();
+        $pending = Reserva::whereBetween('data', [$startMonth, $endMonth])->where('status', 'pendente')->count();
+        $canceled = Reserva::whereBetween('data', [$startMonth, $endMonth])->where('status', 'cancelada')->count();
         $total = $query->count();
 
         ReservasHelper::applySearchFilter($request, $query);
+        $week = ReservasHelper::getWeekReservations($query->get());
 
         $monthReservations = $query->paginate(5, ['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras', 'name', 'email']);
 
-        return response()->json(['total' => $total, 'reservas' => $monthReservations], 200);
-    }
-
-    public function getReservationsByWeekDay(): JsonResponse
-    {
-        $data = Reserva::with('user')->selectRaw('DATE(data) as dia, COUNT(*) as total')
-            ->whereMonth('data', Carbon::now()->month)
-            ->groupBy('dia')
-            ->orderBy('dia')
-            ->get()
-            ->map(function ($item) {
-                $item->label = Carbon::parse($item->dia)->format('d/m');
-                return $item;
-            });
-
-        return response()->json($data, 200);
+        return response()->json(['total' => $total, 'confirmadas' => $confirmed, 'pendentes' => $pending, 'canceladas' => $canceled, 'semanas' => $week, 'reservas' => $monthReservations], 200);
     }
 }

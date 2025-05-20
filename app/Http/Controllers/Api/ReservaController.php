@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class ReservaController extends Controller
 {
@@ -36,7 +37,7 @@ class ReservaController extends Controller
 
         ReservasHelper::applySearchFilter($request, $query);
 
-        $reservas = $query->paginate(5, ['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras', 'name', 'email', 'phone']);
+        $reservas = $query->paginate(5, ['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras', 'name', 'email', 'phone', 'status']);
 
         return response()->json($reservas, 200);
     }
@@ -82,7 +83,9 @@ class ReservaController extends Controller
                 'quantidade_cadeiras' => $request->quantidade_cadeiras,
                 'name' => $user->name,
                 'email' => $user->email,
-                'phone' => $user->phone
+                'phone' => $user->phone,
+                'confirmacao_token' => Str::random(32),
+                'status' => 'pendente'
             ]);
 
             Mail::to($user->email)->send(new ConfirmReservation([
@@ -90,13 +93,14 @@ class ReservaController extends Controller
                 'data' => $reserva->data,
                 'hora' => $reserva->hora,
                 'quantidade_pessoas' => $reserva->quantidade_cadeiras,
+                'link' => url("/api/confirmar-reserva/{$reserva->confirmacao_token}")
             ]));
 
             DB::commit();
 
             return response()->json([
                 'message' => 'Reserva feita com sucesso!',
-                'reserva' => $reserva->only(['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras', 'name', 'email', 'phone'])
+                'reserva' => $reserva->only(['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras', 'name', 'email', 'phone', 'status'])
             ], 201);
 
         } catch(Exception $e) {
@@ -275,5 +279,10 @@ class ReservaController extends Controller
                 'message' => $e->getMessage()
             ], 400);
         }
+    }
+
+    public function confirmReservation($token)
+    {
+        ReservasHelper::confirmReservation($token);
     }
 }

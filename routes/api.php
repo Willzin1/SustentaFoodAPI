@@ -45,9 +45,10 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function() {
         Route::get('/dia', 'getReservationsByDay');
         Route::get('/semana', 'getReservationsByWeek');
         Route::get('/mes', 'getReservationsByMonth');
-        Route::get('/diaSemana', 'getReservationsByWeekDay');
     });
 });
+
+Route::get('/confirmar-reserva/{token}', [ReservaController::class, 'confirmReservation']);
 
 // Rota que o usuário acessa via link do e-mail (GET)
 Route::get('/email/verify/{id}/{hash}', function ($id, $hash) {

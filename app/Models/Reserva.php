@@ -22,7 +22,9 @@ class Reserva extends Model
         'quantidade_cadeiras',
         'name',
         'email',
-        'phone'
+        'phone',
+        'status',
+        'confirmacao_token'
     ];
 
     /**

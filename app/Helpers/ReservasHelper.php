@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use App\Models\Reserva;
+use Carbon\Carbon;
 
 class ReservasHelper
 {
@@ -74,5 +75,84 @@ class ReservasHelper
         }
 
         return $query;
+    }
+
+    public static function confirmReservation($token)
+    {
+        $reserva = Reserva::where('confirmacao_token', $token)->first();
+
+        $reserva->status = 'confirmada';
+        $reserva->confirmacao_token = null;
+        $reserva->save();
+
+        return view('emails.reservation_confirmed2');
+    }
+
+    public static function getWeekdayReservations($reservas)
+    {
+        $daysOfWeek = [
+            'Segunda' => 0,
+            'Terça' => 0,
+            'Quarta' => 0,
+            'Quinta' => 0,
+            'Sexta' => 0,
+            'Sábado' => 0,
+            'Domingo' => 0,
+        ];
+
+        foreach ($reservas as $reserva) {
+            $dia = Carbon::parse($reserva->data)->locale('pt_BR')->isoFormat('dddd');
+
+            $diaFormatado = ucfirst(str_replace('-feira', '', $dia));
+
+            if (isset($daysOfWeek[$diaFormatado])) {
+                $daysOfWeek[$diaFormatado]++;
+            }
+        }
+
+        return $daysOfWeek;
+    }
+
+    public static function getWeekReservations($reservas)
+    {
+    $semanas = [];
+
+    foreach ($reservas as $reserva) {
+        $data = Carbon::parse($reserva->data);
+
+        $dia = $data->day;
+        $mes = $data->month;
+        $ano = $data->year;
+
+        // Semana do mês (1 a 5)
+        $semanaDoMes = ceil($dia / 7);
+        $chave = "Semana $semanaDoMes";
+
+        // Calcula início e fim da semana com base no número
+        $inicioSemana = Carbon::create($ano, $mes, 1)->addDays(($semanaDoMes - 1) * 7);
+        $fimSemana = (clone $inicioSemana)->addDays(6);
+
+        // Garante que o fim da semana não ultrapasse o fim do mês
+        $fimDoMes = Carbon::create($ano, $mes)->endOfMonth();
+        if ($fimSemana->gt($fimDoMes)) {
+            $fimSemana = $fimDoMes;
+        }
+
+        // Formata o período da semana
+        $periodo = $inicioSemana->format('d/m') . ' a ' . $fimSemana->format('d/m');
+
+        if (!isset($semanas[$chave])) {
+            $semanas[$chave] = [
+                'semana' => $chave,
+                'total' => 0,
+                'periodo' => $periodo
+            ];
+        }
+
+        $semanas[$chave]['total']++;
+    }
+
+    // Retorna como array de valores (sem as chaves associativas)
+    return array_values($semanas);
     }
 }
