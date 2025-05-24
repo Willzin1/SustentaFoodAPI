@@ -54,7 +54,7 @@ class FavoriteController extends Controller
     public function getMostFavoritedDishes()
     {
         $mostFavorited = Favorite::select('prato_id', DB::raw('count(*) as total_favorites'))
-            ->with(['prato:id,nome,descricao,imagem']) // Carrega os dados do prato
+            ->with(['prato:id,nome,descricao,imagem,categoria']) // Carrega os dados do prato
             ->groupBy('prato_id')
             ->orderBy('total_favorites', 'desc')
             ->get()
