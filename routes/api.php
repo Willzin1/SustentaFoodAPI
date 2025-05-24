@@ -54,7 +54,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function() {
         Route::delete('/{pratoId}', 'destroy');
         Route::get('/', 'getUserFavorites');
         Route::get('/verificar/{pratoId}', 'checkIsFavorite');
-        Route::get('/favoritados', 'getMostFavoritedDishes')->middleware('checkRole');
+        Route::get('/favoritados', 'getMostFavoritedDishes');
     });
 });
 
