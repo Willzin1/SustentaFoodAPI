@@ -53,7 +53,7 @@ class ReservasHelper
                     });
                     break;
                 case 'Data':
-                    $query->where('data', 'like', "%$search%");
+                    $query->where('data', $search);
                     break;
                 case 'Hora':
                     $query->where('hora', 'like', "%$search%");
