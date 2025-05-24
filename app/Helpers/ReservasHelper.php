@@ -53,7 +53,7 @@ class ReservasHelper
                     });
                     break;
                 case 'Data':
-                    $query->where('data', $search);
+                    $query->whereDate('data', $search);
                     break;
                 case 'Hora':
                     $query->where('hora', 'like', "%$search%");
@@ -64,7 +64,7 @@ class ReservasHelper
                 default:
                     $query->where(function ($q) use ($search) {
                         $q->where('id', 'like', "%$search%")
-                            ->orWhere('data', 'like', "%$search%")
+                            ->orWhereDate('data', $search)
                             ->orWhere('hora', 'like', "%$search%")
                             ->orWhere('quantidade_cadeiras', 'like', "%$search%")
                             ->orWhereHas('user', function ($q2) use ($search) {
