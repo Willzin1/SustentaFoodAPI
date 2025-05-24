@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\RelatorioReservaController;
 use App\Http\Controllers\Api\ReservaController;
 use App\Http\Controllers\Api\TokenController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\FavoriteController;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -46,6 +47,12 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function() {
         Route::get('/semana', 'getReservationsByWeek');
         Route::get('/mes', 'getReservationsByMonth');
     });
+
+    // Rotas para favoritos (protegidas por autenticação)
+    Route::post('/favorites/{pratoId}', [FavoriteController::class, 'toggleFavorite']);
+    Route::get('/favorites', [FavoriteController::class, 'getUserFavorites']);
+    Route::get('/favorites/check/{pratoId}', [FavoriteController::class, 'checkIsFavorite']);
+    Route::get('/favorites/most-favorited', [FavoriteController::class, 'getMostFavoritedDishes'])->middleware('checkRole');
 });
 
 Route::get('/confirmar-reserva/{token}', [ReservaController::class, 'confirmReservation']);
