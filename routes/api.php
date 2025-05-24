@@ -49,10 +49,13 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function() {
     });
 
     // Rotas para favoritos (protegidas por autenticação)
-    Route::post('/favorites/{pratoId}', [FavoriteController::class, 'toggleFavorite']);
-    Route::get('/favorites', [FavoriteController::class, 'getUserFavorites']);
-    Route::get('/favorites/check/{pratoId}', [FavoriteController::class, 'checkIsFavorite']);
-    Route::get('/favorites/most-favorited', [FavoriteController::class, 'getMostFavoritedDishes'])->middleware('checkRole');
+    Route::prefix('/favoritos')->controller(FavoriteController::class)->group(function() {
+        Route::post('/{pratoId}', 'toggleFavorite');
+        Route::delete('/{pratoId}', 'destroy');
+        Route::get('/', 'getUserFavorites');
+        Route::get('/verificar/{pratoId}', 'checkIsFavorite');
+        Route::get('/mais-favoritos', 'getMostFavoritedDishes')->middleware('checkRole');
+    });
 });
 
 Route::get('/confirmar-reserva/{token}', [ReservaController::class, 'confirmReservation']);

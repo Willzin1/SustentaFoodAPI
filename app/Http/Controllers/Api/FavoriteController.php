@@ -69,4 +69,15 @@ class FavoriteController extends Controller
             'most_favorited' => $mostFavorited
         ]);
     }
+
+    public function destroy($pratoId) 
+    {
+        $userId = auth()->id();
+
+        $favorite = Favorite::where('user_id', $userId)
+            ->where('prato_id', $pratoId)
+            ->delete();
+
+        return response()->json(['message' => 'Prato removido dos favoritos']);
+    }
 } 
