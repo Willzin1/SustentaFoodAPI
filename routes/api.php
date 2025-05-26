@@ -15,6 +15,7 @@ Route::post('/users', [UserController::class, 'store']);
 Route::post('/login', [TokenController::class, 'store']);
 Route::post('/reservas/notLoggedUser', [ReservaController::class, 'notLoggedUserStore']);
 Route::get('/cardapio', [CardapioController::class, 'index']);
+Route::get('/favoritados', [FavoriteController::class, 'getMostFavoritedDishes']);
 
 // Rotas Privadas
 Route::middleware(['auth:sanctum', 'verified'])->group(function() {
@@ -54,7 +55,6 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function() {
         Route::delete('/{pratoId}', 'destroy');
         Route::get('/', 'getUserFavorites');
         Route::get('/verificar/{pratoId}', 'checkIsFavorite');
-        Route::get('/favoritados', 'getMostFavoritedDishes');
     });
 });
 
