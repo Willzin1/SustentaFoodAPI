@@ -4,9 +4,9 @@ services:
     container_name: mysql_laravel
     restart: always
     environment:
-      MYSQL_DATABASE: laravel
-      MYSQL_USER: laravel
-      MYSQL_PASSWORD: secret
+      MYSQL_DATABASE: apiLavarel
+      MYSQL_USER: William
+      MYSQL_PASSWORD: Will3443*
       MYSQL_ROOT_PASSWORD: root
     ports:
       - "3306:3306"

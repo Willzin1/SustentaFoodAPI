@@ -25,6 +25,7 @@ class CardapioController extends Controller
     public function index(): JsonResponse
     {
         $query = Prato::orderBy('id', 'DESC');
+        $getDishes = $query->get();
 
         if (request()->has('search')) {
             $search = request('search');
@@ -47,9 +48,10 @@ class CardapioController extends Controller
             };
         };
 
+
         $pratos = $query->paginate(5, ['id', 'nome', 'descricao', 'imagem', 'categoria']);
 
-        return response()->json($pratos);
+        return response()->json(['paginate' => $pratos, 'pratos' => $getDishes], 200);
     }
 
     /**
