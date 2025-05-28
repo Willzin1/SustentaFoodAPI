@@ -70,7 +70,7 @@ Route::get('/email/verify/{id}/{hash}', function ($id, $hash) {
 
     $user->markEmailAsVerified();
 
-    return redirect('http://127.0.0.1:8000/verify');
+    return redirect(env('APP_URL_PRODUCTION') . '/verify');
 })->middleware(['signed'])->name('verification.verify');
 
 // Rota para reenviar o link de verificação (POST)
