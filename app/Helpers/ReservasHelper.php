@@ -73,17 +73,6 @@ class ReservasHelper
         return $query;
     }
 
-    public static function confirmReservation($token)
-    {
-        $reserva = Reserva::where('confirmacao_token', $token)->first();
-
-        $reserva->status = 'confirmada';
-        $reserva->confirmacao_token = null;
-        $reserva->save();
-
-        return view('emails.reservation_confirmed2');
-    }
-
     public static function getWeekdayReservations($reservas)
     {
         $daysOfWeek = [

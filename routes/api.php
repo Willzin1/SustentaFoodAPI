@@ -6,8 +6,7 @@ use App\Http\Controllers\Api\ReservaController;
 use App\Http\Controllers\Api\TokenController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\FavoriteController;
-use App\Models\User;
-use Illuminate\Http\Request;
+use App\Http\Controllers\Api\EmailVerificationController;
 use Illuminate\Support\Facades\Route;
 
 // Rotas Públicas
@@ -58,29 +57,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function() {
     });
 });
 
-Route::get('/confirmar-reserva/{token}', [ReservaController::class, 'confirmReservation']);
-
-// Rota que o usuário acessa via link do e-mail (GET)
-Route::get('/email/verify/{id}/{hash}', function ($id, $hash) {
-    $user = User::findOrFail($id);
-
-    if (! hash_equals($hash, sha1($user->getEmailForVerification()))) {
-        return response()->json(['message' => 'Verificação de e-mail falhou.'], 400);
-    }
-
-    $user->markEmailAsVerified();
-
-    return redirect(env('APP_URL_VERIFY') . '/verify');
-})->middleware(['signed'])->name('verification.verify');
-
-// Rota para reenviar o link de verificação (POST)
-Route::post('/email/verification-notification', function (Request $request) {
-
-    if ($request->user()->hasVerifiedEmail()) {
-        return response()->json(['message' => 'Seu e-mail já foi verificado.'], 400);
-    }
-
-    $request->user()->sendEmailVerificationNotification();
-
-    return response()->json(['message' => 'Link de verificação enviado novamente!']);
-})->name('verification.send');
+Route::controller(EmailVerificationController::class)->group(function() {
+    Route::get('/confirmar-reserva/{token}', 'confirmReserva');
+    Route::get('/email/verify/{id}/{hash}', 'verify')->middleware(['signed'])->name('verification.verify');
+    Route::post('/email/verification-notification', 'resend')->name('verification.send');
+});
