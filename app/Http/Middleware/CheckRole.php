@@ -21,7 +21,6 @@ class CheckRole
         if($user->role != 'admin') {
             return response()->json(['message' => 'Acesso não autorizado'], 403);
         }
-
         return $next($request);
     }
 }
