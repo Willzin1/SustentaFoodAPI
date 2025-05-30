@@ -17,7 +17,7 @@ class EmailVerificationController extends Controller
         $reserva->confirmacao_token = null;
         $reserva->save();
 
-        return redirect('http://127.0.0.1:8000/confirmar-reserva');
+        return redirect(env('APP_URL_FRONTEND') . '/confirmar-reserva');
     }
 
     public function verify($id, $hash)
@@ -43,4 +43,4 @@ class EmailVerificationController extends Controller
 
         return response()->json(['message' => 'Link de verificação enviado novamente!']);
     }
-} 
+}
