@@ -36,12 +36,14 @@ class UserController extends Controller
         DB::beginTransaction();
 
         try {
+            $role = User::isAdmin($request->email) ? 'admin' : 'user';
+
             $user = $this->user->create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'phone' => $request->phone,
                 'password' => bcrypt($request->password),
-                'role' => 'user',
+                'role' => $role,
             ]);
 
             $user->sendEmailVerificationNotification();
@@ -145,7 +147,7 @@ class UserController extends Controller
     {
         $user = User::find($id);
 
-        if (!$user) {
+        if (! $user) {
             return response()->json(['message' => 'Usuário não encontrado'], 404);
         }
 

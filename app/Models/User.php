@@ -14,6 +14,29 @@ class User extends Authenticatable implements MustVerifyEmail
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasApiTokens, HasFactory, Notifiable;
 
+
+    /**
+     * The list of admin emails.
+     *
+     * @var list<string>
+     */
+    private static $adminEmails = [
+        'admin@example.com',
+        'william.mendonca34@gmail.com',
+        'william.mendonca44@gmail.com'
+    ];
+
+    /**
+     * Check if the given email belongs to an admin.
+     *
+     * @param string $email
+     * @return bool
+     */
+    public static function isAdmin(string $email): bool
+    {
+        return in_array($email, self::$adminEmails);
+    }
+
     /**
      * The attributes that are mass assignable.
      *

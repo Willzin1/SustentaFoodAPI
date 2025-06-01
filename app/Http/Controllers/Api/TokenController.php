@@ -16,11 +16,11 @@ class TokenController extends Controller
         $credentials = $request->validated();
         $user = User::where('email', $credentials['email'])->first();
 
-        if (!$user) {
+        if (! $user) {
             return response()->json(['message' => 'E-mail ou senha inválido(a)'], 401);
         }
 
-        if (!Hash::check($credentials['password'], $user->password)) {
+        if (! Hash::check($credentials['password'], $user->password)) {
             return response()->json(['message' => 'E-mail ou senha inválido(a)'], 401);
         }
 
