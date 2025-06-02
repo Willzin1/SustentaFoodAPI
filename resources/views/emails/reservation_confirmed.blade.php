@@ -24,6 +24,13 @@
 
                     <br>
 
+                    <p>
+                        <strong>ATENÇÃO:</strong> Após confirmar a reserva, não será mais possível fazer alterações.
+                        Se precisar fazer alguma mudança, entre em contato direto com o restaurante.
+                    </p>
+
+                    <br>
+
                     <p>Se não foi você quem fez esta solicitação, ignore este e-mail.</p>
                 </div>
             </td>

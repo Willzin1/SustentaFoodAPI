@@ -107,8 +107,8 @@ class ReservaController extends Controller
             DB::rollBack();
 
             return response()->json([
-                'error' => 'Ocorreu um erro ao realizar reserva',
-                'message' => $e->getMessage()
+                'message' => 'Ocorreu um erro ao realizar reserva',
+                'error' => $e->getMessage()
             ], 400);
         }
     }
@@ -135,6 +135,8 @@ class ReservaController extends Controller
      */
     public function update(ReservaRequest $request, string $id): JsonResponse
     {
+        $user = Auth::user();
+
         try {
             DB::beginTransaction();
 
@@ -144,6 +146,12 @@ class ReservaController extends Controller
                 return response()->json([
                     'message' => 'Reserva não encontrada'
                 ], 404);
+            }
+
+            if ($reserva->status === 'confirmada') {
+                return response()->json([
+                    'message' => 'Não é possível editar uma reserva já confirmada'
+                ], 403);
             }
 
             $isAvailable = ReservasHelper::checkAvailability(
@@ -169,6 +177,14 @@ class ReservaController extends Controller
                 'hora' => $request->hora,
                 'quantidade_cadeiras' => $request->quantidade_cadeiras
             ]);
+
+            Mail::to($user->email)->send(new ConfirmReservation([
+                'name' => $user->name,
+                'data' => $reserva->data,
+                'hora' => $reserva->hora,
+                'quantidade_pessoas' => $reserva->quantidade_cadeiras,
+                'link' => url("/api/confirmar-reserva/{$reserva->confirmacao_token}")
+            ]));
 
             DB::commit();
 
@@ -282,10 +298,5 @@ class ReservaController extends Controller
                 'message' => $e->getMessage()
             ], 400);
         }
-    }
-
-    public function confirmReservation($token)
-    {
-        ReservasHelper::confirmReservation($token);
     }
 }
