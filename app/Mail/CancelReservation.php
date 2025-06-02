@@ -29,7 +29,7 @@ class CancelReservation extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Reserva Cancelada',
+            subject: $this->dados['titulo_cancelamento'] ?? 'Reserva cancelada',
         );
     }
 

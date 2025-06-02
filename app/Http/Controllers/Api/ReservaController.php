@@ -174,6 +174,29 @@ class ReservaController extends Controller
                 ], 400);
             }
 
+            if (Auth::user()->role === 'admin') {
+                $reserva->update([
+                    'data' => $request->data,
+                    'hora' => $request->hora,
+                    'quantidade_cadeiras' => $request->quantidade_cadeiras,
+                ]);
+
+                DB::commit();
+
+                Mail::to($reserva->email)->send(new ConfirmReservation([
+                    'name' => $reserva->name,
+                    'data' => $reserva->data,
+                    'hora' => $reserva->hora,
+                    'quantidade_pessoas' => $reserva->quantidade_cadeiras,
+                    'titulo' => 'Reserva alterada pelo estabelecimento',
+                    'link' => url("/api/confirmar-reserva/{$reserva->confirmacao_token}")
+                ]));
+
+                return response()->json([
+                    'message' => 'Reserva alterada pelo administrador!'
+                ], 200);
+            }
+
             $reserva->update([
                 'data' => $request->data,
                 'hora' => $request->hora,
@@ -302,7 +325,7 @@ class ReservaController extends Controller
         }
     }
 
-    public function cancel(string $id)
+    public function cancel(Request $request, string $id)
     {
         try {
             DB::beginTransaction();
@@ -319,6 +342,26 @@ class ReservaController extends Controller
             $reserva->user_id = null;
             $reserva->canceled_at = now();
             $reserva->save();
+
+            if (Auth::user()->role === 'admin') {
+                $reserva->motivo_cancelamento = $request->motivo_cancelamento;
+
+                $reserva->save();
+                DB::commit();
+
+                Mail::to($reserva->email)->send(new CancelReservation([
+                    'name' => $reserva->name,
+                    'data' => $reserva->data,
+                    'hora' => $reserva->hora,
+                    'quantidade_pessoas' => $reserva->quantidade_cadeiras,
+                    'motivo_cancelamento' => $reserva->motivo_cancelamento,
+                    'titulo_cancelamento' => 'Reserva cancelada pelo estabelecimento'
+                ]));
+
+                return response()->json([
+                    'message' => 'Reserva cancelada pelo administrador!'
+                ], 200);
+            }
 
             Mail::to($reserva->email)->send(new CancelReservation([
                 'name' => $reserva->name,

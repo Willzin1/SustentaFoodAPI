@@ -29,7 +29,7 @@ class ConfirmReservation extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Confirmação de Reserva',
+            subject: $this->dados['titulo'] ?? 'Confirmação de Reserva',
         );
     }
 
