@@ -24,7 +24,9 @@ class Reserva extends Model
         'email',
         'phone',
         'status',
-        'confirmacao_token'
+        'confirmacao_token',
+        'canceled_at',
+        'motivo_cancelamento',
     ];
 
     /**
@@ -34,7 +36,8 @@ class Reserva extends Model
      */
     protected $casts = [
         'data' => 'date',
-        'hora' => 'datetime:H:i'
+        'hora' => 'datetime:H:i',
+        'canceled_at' => 'datetime'
     ];
 
     public function user()

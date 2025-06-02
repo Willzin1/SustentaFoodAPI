@@ -31,6 +31,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function() {
         Route::get('/{reserva}', 'show')->middleware('checkReserva');
         Route::put('/{reserva}', 'update')->middleware('checkReserva');
         Route::delete('/{reserva}', 'destroy')->middleware('checkReserva');
+        Route::post('/{reserva}/cancelar', 'cancel')->middleware('checkReserva');
     });
 
     Route::prefix('/cardapio')->controller(CardapioController::class)->middleware('checkRole')->group(function() {

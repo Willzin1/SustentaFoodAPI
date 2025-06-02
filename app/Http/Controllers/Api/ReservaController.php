@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Helpers\ReservasHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ReservaRequest;
+use App\Mail\CancelReservation;
 use App\Mail\ConfirmReservation;
 use App\Models\Reserva;
+use App\Models\User;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -297,6 +299,47 @@ class ReservaController extends Controller
                 'error' => 'Ocorreu um erro ao realizar reserva',
                 'message' => $e->getMessage()
             ], 400);
+        }
+    }
+
+    public function cancel(string $id)
+    {
+        try {
+            DB::beginTransaction();
+
+            $reserva = $this->reserva->find($id);
+
+            if (!$reserva) {
+                return response()->json([
+                    'message' => 'Reserva não encontrada'
+                ], 404);
+            }
+
+            $reserva->status = 'cancelada';
+            $reserva->user_id = null;
+            $reserva->canceled_at = now();
+            $reserva->save();
+
+            Mail::to($reserva->email)->send(new CancelReservation([
+                'name' => $reserva->name,
+                'data' => $reserva->data,
+                'hora' => $reserva->hora,
+                'quantidade_pessoas' => $reserva->quantidade_cadeiras,
+            ]));
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Reserva cancelada com sucesso',
+                'reserva' => $reserva->only(['id', 'user_id', 'data', 'hora', 'quantidade_cadeiras', 'status'])
+            ], 200);
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'message' => 'Ocorreu um erro ao fazer o cancelamento da reserva',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 }

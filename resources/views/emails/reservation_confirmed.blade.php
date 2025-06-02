@@ -1,5 +1,7 @@
 @extends('templates.master')
 
+@section('title', 'Confirmação de Reserva')
+
 @section('content')
     <table width="100%" cellpadding="0" cellspacing="0" bgcolor="beige">
         <tr>

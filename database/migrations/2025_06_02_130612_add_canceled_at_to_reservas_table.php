@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('reservas', function (Blueprint $table) {
-            $table->softDeletes();
+            $table->timestamp('canceled_at')->nullable()->after('status');
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('reservas', function (Blueprint $table) {
-            $table->dropSoftDeletes();
+            $table->dropColumn('canceled_at');
         });
     }
-}; 
+};
