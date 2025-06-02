@@ -14,7 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'checkRole' => \App\Http\Middleware\CheckRole::class,
-            'checkReserva' => \App\Http\Middleware\CheckReserva::class
+            'checkReserva' => \App\Http\Middleware\CheckReservas::class
         ]);
 
         $middleware->group('api', [
