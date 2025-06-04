@@ -25,7 +25,7 @@ class TokenController extends Controller
         }
 
         if (! $user->hasVerifiedEmail()) {
-            return response()->json(['message' => 'Por favor, verifique seu e-mail'], 403);
+            return response()->json(['message' => 'Por favor, faça a confirmação do e-mail'], 403);
         }
 
         $token = $user->createToken('api-token')->plainTextToken;
@@ -34,7 +34,7 @@ class TokenController extends Controller
             'message' => 'Login realizado com sucesso!',
             'token' => $token,
             'token_type' => 'bearer',
-            'user' => $user,
+            'user' => $user->except(['password', 'email_verified_at', 'created_at', 'updated_at', 'remember_token']),
         ], 200);
     }
 

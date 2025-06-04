@@ -62,7 +62,7 @@ class ReservaController extends Controller
 
             if (! $isAvailable) {
                 return response()->json([
-                    'message' => 'Reserva indisponível para esse horário.'
+                    'message' => 'Reserva indisponível para esse horário'
                 ], 400);
             }
 
@@ -74,7 +74,7 @@ class ReservaController extends Controller
 
             if ($request->quantidade_cadeiras > 12) {
                 return response()->json([
-                    'message' => 'Reservas acima de 12 pessoas devem ser feitas diretamente com o restaurante.'
+                    'message' => 'Reservas acima de 12 pessoas devem ser feitas diretamente com o restaurante'
                 ], 400);
             }
 
