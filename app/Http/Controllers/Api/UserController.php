@@ -11,16 +11,31 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
+/**
+ * Controller responsável pelo gerenciamento de usuários
+ */
 class UserController extends Controller
 {
     public readonly User $user;
+
+    /**
+     * Constructor - Inicializa uma nova instância do modelo User
+     */
     public function __construct()
     {
         $this->user = new User;
     }
 
     /**
-     * Display a listing of the resource.
+     * Lista todos os usuários
+     *
+     * @return JsonResponse Retorna uma resposta JSON contendo:
+     * Lista de usuários com os campos:
+     * - id
+     * - name
+     * - email
+     * - phone
+     * - role
      */
     public function index(): JsonResponse
     {
@@ -29,7 +44,19 @@ class UserController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Cadastra um novo usuário
+     *
+     * @param UserRequest $request Dados do usuário
+     * @return JsonResponse Retorna uma resposta JSON contendo:
+     * - message: Mensagem de sucesso
+     * - user: Dados do usuário criado
+     *
+     * Funcionalidades:
+     * - Criptografa senha
+     * - Define role (admin/user)
+     * - Envia email de verificação
+     *
+     * @throws Exception Em caso de erro no cadastro
      */
     public function store(UserRequest $request): JsonResponse
     {
@@ -70,7 +97,19 @@ class UserController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Exibe detalhes de um usuário específico
+     *
+     * @param string $id ID do usuário
+     * @return JsonResponse Retorna uma resposta JSON contendo:
+     * Dados do usuário:
+     * - id
+     * - name
+     * - email
+     * - phone
+     * - role
+     *
+     * Em caso de não encontrado:
+     * - message: Usuário não encontrado
      */
     public function show(String $id): JsonResponse
     {
@@ -86,7 +125,20 @@ class UserController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Atualiza dados de um usuário
+     *
+     * @param Request $request Novos dados do usuário
+     * @param string $id ID do usuário
+     * @return JsonResponse Retorna uma resposta JSON contendo:
+     * - message: Mensagem de sucesso
+     * - user: Dados atualizados
+     *
+     * Validações:
+     * - Nome obrigatório
+     * - Telefone válido (BR)
+     *
+     * @throws ValidationException Em caso de dados inválidos
+     * @throws Exception Em caso de erro na atualização
      */
     public function update(Request $request, String $id): JsonResponse
     {
@@ -141,7 +193,17 @@ class UserController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove um usuário
+     *
+     * @param string $id ID do usuário
+     * @return JsonResponse Retorna uma resposta JSON contendo:
+     * - message: Confirmação da remoção
+     *
+     * Em caso de erro:
+     * - message: Mensagem de erro
+     * - error: Detalhes do erro
+     *
+     * @throws Exception Em caso de erro na remoção
      */
     public function destroy(String $id): JsonResponse
     {

@@ -9,8 +9,31 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
+/**
+ * Controller responsável pelo gerenciamento de tokens de autenticação
+ */
 class TokenController extends Controller
 {
+    /**
+     * Cria um novo token de acesso
+     *
+     * @param TokenRequest $request Request com credenciais de login
+     * @return JsonResponse Retorna uma resposta JSON contendo:
+     * - message: Mensagem de sucesso
+     * - token: Token de acesso gerado
+     * - token_type: Tipo do token (bearer)
+     * - user: Dados do usuário autenticado
+     *
+     * Validações:
+     * - Verifica se email existe
+     * - Valida senha
+     * - Verifica se email foi confirmado
+     *
+     * Códigos de resposta:
+     * - 200: Login realizado com sucesso
+     * - 401: Credenciais inválidas
+     * - 403: Email não confirmado
+     */
     public function store(TokenRequest $request): JsonResponse
     {
         $credentials = $request->validated();
@@ -38,6 +61,17 @@ class TokenController extends Controller
         ], 200);
     }
 
+    /**
+     * Remove o token de acesso atual (logout)
+     *
+     * @param Request $request Request com token atual
+     * @return JsonResponse Retorna uma resposta JSON contendo:
+     * - message: Mensagem de confirmação do logout
+     *
+     * Requer:
+     * - Usuário autenticado
+     * - Token válido
+     */
     public function destroy(Request $request): JsonResponse
     {
         $request->user()->currentAccessToken()->delete();

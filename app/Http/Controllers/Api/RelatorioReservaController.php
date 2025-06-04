@@ -10,8 +10,34 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
+/**
+ * Controller responsável por gerar relatórios de reservas
+ */
 class RelatorioReservaController extends Controller
 {
+    /**
+     * Retorna relatório de reservas do dia atual
+     *
+     * @param Request $request Request com possíveis filtros de busca
+     * @return JsonResponse Retorna uma resposta JSON contendo:
+     * - total: Total de reservas do dia
+     * - confirmadas: Número de reservas confirmadas
+     * - pendentes: Número de reservas pendentes
+     * - canceladas: Número de reservas canceladas
+     * - reservas: Lista paginada (5 por página) com detalhes das reservas:
+     *   - id
+     *   - user_id
+     *   - data
+     *   - hora
+     *   - quantidade_cadeiras
+     *   - name
+     *   - email
+     *   - status
+     *
+     * Em caso de erro:
+     * - message: Mensagem de erro
+     * - error: Detalhes do erro
+     */
     public function getReservationsByDay(Request $request): JsonResponse
     {
         try {
@@ -44,6 +70,22 @@ class RelatorioReservaController extends Controller
         }
     }
 
+    /**
+     * Retorna relatório de reservas da semana atual
+     *
+     * @param Request $request Request com possíveis filtros de busca
+     * @return JsonResponse Retorna uma resposta JSON contendo:
+     * - total: Total de reservas da semana
+     * - confirmadas: Número de reservas confirmadas
+     * - pendentes: Número de reservas pendentes
+     * - canceladas: Número de reservas canceladas
+     * - dias: Agrupamento de reservas por dia da semana
+     * - reservas: Lista paginada (5 por página) com detalhes das reservas
+     *
+     * Em caso de erro:
+     * - message: Mensagem de erro
+     * - error: Detalhes do erro
+     */
     public function getReservationsByWeek(Request $request): JsonResponse
     {
         try {
@@ -79,6 +121,22 @@ class RelatorioReservaController extends Controller
 
     }
 
+    /**
+     * Retorna relatório de reservas do mês atual
+     *
+     * @param Request $request Request com possíveis filtros de busca
+     * @return JsonResponse Retorna uma resposta JSON contendo:
+     * - total: Total de reservas do mês
+     * - confirmadas: Número de reservas confirmadas
+     * - pendentes: Número de reservas pendentes
+     * - canceladas: Número de reservas canceladas
+     * - semanas: Agrupamento de reservas por semana do mês
+     * - reservas: Lista paginada (5 por página) com detalhes das reservas
+     *
+     * Em caso de erro:
+     * - message: Mensagem de erro
+     * - error: Detalhes do erro
+     */
     public function getReservationsByMonth(Request $request): JsonResponse
     {
         $startMonth = Carbon::now()->startOfMonth();

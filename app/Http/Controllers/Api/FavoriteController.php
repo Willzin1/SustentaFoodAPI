@@ -9,9 +9,25 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-
+/**
+ * Controller responsável pelo gerenciamento de pratos favoritos
+ */
 class FavoriteController extends Controller
 {
+    /**
+     * Adiciona um prato aos favoritos do usuário autenticado
+     *
+     * @param string $pratoId ID do prato a ser favoritado
+     * @return JsonResponse Retorna uma resposta JSON contendo:
+     * - message: Mensagem de confirmação
+     * - is_favorite: Status do favoritamento (true)
+     *
+     * Em caso de erro:
+     * - message: Mensagem de erro
+     * - error: Detalhes do erro
+     *
+     * @throws Exception Em caso de erro ao adicionar aos favoritos
+     */
     public function store(string $pratoId): JsonResponse
     {
         $user = Auth::user();
@@ -36,6 +52,22 @@ class FavoriteController extends Controller
 
     }
 
+    /**
+     * Retorna lista de pratos favoritos do usuário autenticado
+     *
+     * @return JsonResponse Retorna uma resposta JSON contendo:
+     * - favorites: Array com os favoritos do usuário, incluindo:
+     *   - id: ID do favorito
+     *   - user_id: ID do usuário
+     *   - prato_id: ID do prato
+     *   - prato: Dados do prato (id, nome, descrição, imagem)
+     *
+     * Em caso de erro:
+     * - message: Mensagem de erro
+     * - error: Detalhes do erro
+     *
+     * @throws Exception Em caso de erro ao buscar favoritos
+     */
     public function getUserFavorites(): JsonResponse
     {
         $user = Auth::user();
@@ -56,6 +88,20 @@ class FavoriteController extends Controller
         }
     }
 
+    /**
+     * Retorna lista dos pratos mais favoritados por todos usuários
+     *
+     * @return JsonResponse Retorna uma resposta JSON contendo:
+     * - most_favorited: Array com os pratos mais favoritados, incluindo:
+     *   - prato: Dados do prato (id, nome, descrição, imagem, categoria)
+     *   - total_favoritos: Número total de favoritamentos
+     *
+     * Em caso de erro:
+     * - message: Mensagem de erro
+     * - error: Detalhes do erro
+     *
+     * @throws Exception Em caso de erro ao buscar pratos mais favoritados
+     */
     public function getMostFavoritedDishes(): JsonResponse
     {
         try {
@@ -81,6 +127,19 @@ class FavoriteController extends Controller
         }
     }
 
+    /**
+     * Remove um prato dos favoritos do usuário autenticado
+     *
+     * @param string $pratoId ID do prato a ser removido dos favoritos
+     * @return JsonResponse Retorna uma resposta JSON contendo:
+     * - message: Mensagem de confirmação
+     *
+     * Em caso de erro:
+     * - message: Mensagem de erro
+     * - error: Detalhes do erro
+     *
+     * @throws Exception Em caso de erro ao remover dos favoritos
+     */
     public function destroy(string $pratoId): JsonResponse
     {
         try {

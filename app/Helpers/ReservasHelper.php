@@ -5,8 +5,22 @@ namespace App\Helpers;
 use App\Models\Reserva;
 use Carbon\Carbon;
 
+/**
+ * Helper class para gerenciamento de reservas
+ * Fornece métodos utilitários para validação e análise de reservas
+ */
 class ReservasHelper
 {
+    /**
+     * Verifica disponibilidade de lugares para uma reserva
+     *
+     * @param string $data Data da reserva
+     * @param string $hora Hora da reserva
+     * @param string $quantidade Quantidade de cadeiras solicitadas
+     * @return bool True se há disponibilidade, False caso contrário
+     *
+     * Capacidade máxima: 80 lugares
+     */
     public static function checkAvailability(string $data, string $hora, string $quantidade): bool
     {
         $isValid = true;
@@ -24,6 +38,14 @@ class ReservasHelper
         return $isValid;
     }
 
+    /**
+     * Verifica se usuário atingiu limite de reservas
+     *
+     * @param string $user_id ID do usuário
+     * @return bool True se não atingiu limite, False caso contrário
+     *
+     * Limite máximo: 4 reservas por usuário
+     */
     public static function checkReservationLimit(string $user_id): bool
     {
         $isValid = true;
@@ -37,6 +59,20 @@ class ReservasHelper
         return $isValid;
     }
 
+    /**
+     * Aplica filtros de busca na query de reservas
+     *
+     * @param Request $request Request com parâmetros de busca
+     * @param Builder $query Query builder das reservas
+     * @return Builder Query modificada com filtros
+     *
+     * Filtros disponíveis:
+     * - ID
+     * - Nome
+     * - Data
+     * - Hora
+     * - Quantidade
+     */
     public static function applySearchFilter($request, $query)
     {
         if ($request->has('search')) {
@@ -73,6 +109,19 @@ class ReservasHelper
         return $query;
     }
 
+    /**
+     * Agrupa reservas por dia da semana
+     *
+     * @param Collection $reservas Collection de reservas
+     * @return array Array associativo com contagem por dia:
+     * - Segunda
+     * - Terça
+     * - Quarta
+     * - Quinta
+     * - Sexta
+     * - Sábado
+     * - Domingo
+     */
     public static function getWeekdayReservations($reservas)
     {
         $daysOfWeek = [
@@ -98,6 +147,20 @@ class ReservasHelper
         return $daysOfWeek;
     }
 
+    /**
+     * Agrupa reservas por semana do mês
+     *
+     * @param Collection $reservas Collection de reservas
+     * @return array Array com dados das semanas:
+     * - semana: Número da semana (1 a 5)
+     * - total: Total de reservas na semana
+     * - periodo: Período da semana (dd/mm a dd/mm)
+     *
+     * Características:
+     * - Calcula semanas com base no dia do mês
+     * - Ajusta fim de semana ao fim do mês
+     * - Formata período com datas
+     */
     public static function getWeekReservations($reservas)
     {
     $semanas = [];
@@ -137,7 +200,7 @@ class ReservasHelper
         $semanas[$chave]['total']++;
     }
 
-    // Retorna como array de valores (sem as chaves associativas)
-    return array_values($semanas);
+        // Retorna como array de valores (sem as chaves associativas)
+        return array_values($semanas);
     }
 }

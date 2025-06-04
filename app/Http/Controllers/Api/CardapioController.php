@@ -10,17 +10,39 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Controller responsável pelo gerenciamento do cardápio
+ */
 class CardapioController extends Controller
 {
-
     public readonly Prato $prato;
+
+    /**
+     * Constructor - Inicializa uma nova instância do modelo Prato
+     */
     public function __construct()
     {
         $this->prato = new Prato;
     }
 
     /**
-     * Display a listing of the resource.
+     * Lista todos os pratos do cardápio
+     *
+     * @return JsonResponse Retorna uma resposta JSON contendo:
+     * - paginate: Lista paginada de pratos (5 por página)
+     * - pratos: Lista completa de pratos
+     *
+     * Permite filtrar por:
+     * - Nome do prato
+     * - Descrição
+     * - Categoria
+     *
+     * Campos retornados:
+     * - id
+     * - nome
+     * - descricao
+     * - imagem
+     * - categoria
      */
     public function index(): JsonResponse
     {
@@ -54,7 +76,18 @@ class CardapioController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Cadastra um novo prato no cardápio
+     *
+     * @param PratoRequest $request Dados do prato a ser cadastrado
+     * @return JsonResponse Retorna uma resposta JSON contendo:
+     * - message: Mensagem de sucesso
+     * - prato: Dados do prato cadastrado
+     *
+     * Em caso de erro:
+     * - message: Mensagem de erro
+     * - error: Detalhes do erro
+     *
+     * @throws Exception Em caso de erro no cadastro
      */
     public function store(PratoRequest $request): JsonResponse
     {
@@ -94,7 +127,18 @@ class CardapioController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Exibe os detalhes de um prato específico
+     *
+     * @param string $id ID do prato
+     * @return JsonResponse Retorna uma resposta JSON contendo os dados do prato:
+     * - id
+     * - nome
+     * - descricao
+     * - categoria
+     * - imagem
+     *
+     * Em caso de não encontrado:
+     * - message: Mensagem informando que o prato não foi encontrado
      */
     public function show(string $id): JsonResponse
     {
@@ -110,7 +154,19 @@ class CardapioController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Atualiza os dados de um prato existente
+     *
+     * @param PratoRequest $request Dados atualizados do prato
+     * @param string $id ID do prato
+     * @return JsonResponse Retorna uma resposta JSON contendo:
+     * - message: Mensagem de sucesso
+     * - prato: Dados atualizados do prato
+     *
+     * Em caso de erro:
+     * - message: Mensagem de erro
+     * - error: Detalhes do erro
+     *
+     * @throws Exception Em caso de erro na atualização
      */
     public function update(PratoRequest $request, string $id): JsonResponse
     {
@@ -156,7 +212,18 @@ class CardapioController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove um prato do cardápio
+     *
+     * @param string $id ID do prato a ser removido
+     * @return JsonResponse Retorna uma resposta JSON contendo:
+     * - message: Mensagem de sucesso
+     * - prato: Dados do prato removido
+     *
+     * Em caso de erro:
+     * - message: Mensagem de erro
+     * - error: Detalhes do erro
+     *
+     * @throws Exception Em caso de erro na remoção
      */
     public function destroy(string $id): JsonResponse
     {

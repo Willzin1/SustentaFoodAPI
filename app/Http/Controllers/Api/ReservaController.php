@@ -17,17 +17,37 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
+/**
+ * Controller responsável pelo gerenciamento de reservas
+ */
 class ReservaController extends Controller
 {
-
     public readonly Reserva $reserva;
+
+    /**
+     * Constructor - Inicializa uma nova instância do modelo Reserva
+     */
     public function __construct()
     {
         $this->reserva = new Reserva;
     }
 
     /**
-     * Display a listing of the resource.
+     * Lista todas as reservas com paginação
+     *
+     * @param Request $request Request com possíveis filtros de busca
+     * @return JsonResponse Lista paginada de reservas (5 por página)
+     *
+     * Campos retornados:
+     * - id
+     * - user_id
+     * - data
+     * - hora
+     * - quantidade_cadeiras
+     * - name
+     * - email
+     * - phone
+     * - status
      */
     public function index(Request $request): JsonResponse
     {
@@ -45,7 +65,19 @@ class ReservaController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Cadastra uma nova reserva para usuário autenticado
+     *
+     * @param ReservaRequest $request Dados da reserva
+     * @return JsonResponse Dados da reserva criada
+     *
+     * Validações:
+     * - Disponibilidade de horário
+     * - Limite de 4 reservas por usuário
+     * - Máximo 12 pessoas por reserva
+     *
+     * Envia email de confirmação
+     *
+     * @throws Exception Em caso de erro no cadastro
      */
     public function store(ReservaRequest $request): JsonResponse
     {
@@ -116,7 +148,10 @@ class ReservaController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Exibe detalhes de uma reserva específica
+     *
+     * @param string $id ID da reserva
+     * @return JsonResponse Dados da reserva
      */
     public function show(string $id): JsonResponse
     {
@@ -133,7 +168,20 @@ class ReservaController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Atualiza uma reserva existente
+     *
+     * @param ReservaRequest $request Novos dados da reserva
+     * @param string $id ID da reserva
+     * @return JsonResponse Dados atualizados da reserva
+     *
+     * Validações:
+     * - Reserva não pode estar confirmada
+     * - Disponibilidade de horário
+     * - Máximo 12 pessoas
+     *
+     * Envia email de confirmação
+     *
+     * @throws Exception Em caso de erro na atualização
      */
     public function update(ReservaRequest $request, string $id): JsonResponse
     {
@@ -231,7 +279,12 @@ class ReservaController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove uma reserva
+     *
+     * @param string $id ID da reserva
+     * @return JsonResponse Confirmação da remoção
+     *
+     * @throws Exception Em caso de erro na remoção
      */
     public function destroy(string $id): JsonResponse
     {
@@ -265,6 +318,20 @@ class ReservaController extends Controller
         }
     }
 
+    /**
+     * Cadastra reserva para usuário não autenticado
+     *
+     * @param ReservaRequest $request Dados da reserva
+     * @return JsonResponse Dados da reserva criada
+     *
+     * Validações:
+     * - Disponibilidade de horário
+     * - Máximo 12 pessoas
+     *
+     * Envia email de confirmação
+     *
+     * @throws Exception Em caso de erro no cadastro
+     */
     public function notLoggedUserStore(ReservaRequest $request): JsonResponse
     {
         try {
@@ -325,6 +392,23 @@ class ReservaController extends Controller
         }
     }
 
+    /**
+     * Cancela uma reserva
+     *
+     * @param Request $request Request com motivo do cancelamento (admin)
+     * @param string $id ID da reserva
+     * @return JsonResponse Confirmação do cancelamento
+     *
+     * Ações:
+     * - Atualiza status para 'cancelada'
+     * - Remove vínculo com usuário
+     * - Registra data/hora do cancelamento
+     * - Envia email de cancelamento
+     *
+     * Admin pode incluir motivo do cancelamento
+     *
+     * @throws Exception Em caso de erro no cancelamento
+     */
     public function cancel(Request $request, string $id)
     {
         try {
