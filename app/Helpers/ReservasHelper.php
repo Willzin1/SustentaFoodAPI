@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use App\Models\Reserva;
+use App\Models\SystemSetting;
 use Carbon\Carbon;
 
 /**
@@ -11,6 +12,17 @@ use Carbon\Carbon;
  */
 class ReservasHelper
 {
+    public static function isNewReservationsAllowed()
+    {
+        $isValid = true;
+
+        if (SystemSetting::getValue('reservas_pausadas', 'false') === 'true') {
+            $isValid = false;
+        }
+
+        return $isValid;
+    }
+
     /**
      * Verifica disponibilidade de lugares para uma reserva
      *
@@ -18,15 +30,14 @@ class ReservasHelper
      * @param string $hora Hora da reserva
      * @param string $quantidade Quantidade de cadeiras solicitadas
      * @return bool True se há disponibilidade, False caso contrário
-     *
-     * Capacidade máxima: 80 lugares
      */
     public static function checkAvailability(string $data, string $hora, string $quantidade): bool
     {
         $isValid = true;
-        $maxCap = 80;
+        $maxCap = (int) SystemSetting::getValue('capacidade_maxima', 80);
         $chairsOccupied = Reserva::where('data', $data)
             ->where('hora', $hora)
+            ->where('status', '!=', 'cancelada')
             ->sum('quantidade_cadeiras');
 
         $chairsAvailable = $maxCap - $chairsOccupied;

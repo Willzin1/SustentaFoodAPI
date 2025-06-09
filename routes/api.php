@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\TokenController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\FavoriteController;
 use App\Http\Controllers\Api\EmailVerificationController;
+use App\Http\Controllers\Api\SystemSettingController;
 use Illuminate\Support\Facades\Route;
 
 // Rotas Públicas
@@ -55,6 +56,15 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function() {
         Route::post('/{pratoId}', 'store');
         Route::delete('/{pratoId}', 'destroy');
     });
+});
+
+// Rotas para configurações do sistema (apenas admin)
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/settings', [SystemSettingController::class, 'getSettings']);
+    Route::get('/settings/max-capacity', [SystemSettingController::class, 'getMaxCapacity']);
+    Route::put('/settings/update-max-capacity', [SystemSettingController::class, 'changeMaxCapacity']);
+    Route::post('/settings/pause-reservations', [SystemSettingController::class, 'pauseReservations']);
+    Route::post('/settings/unpause-reservations', [SystemSettingController::class, 'unpauseReservations']);
 });
 
 Route::controller(EmailVerificationController::class)->group(function() {

@@ -83,18 +83,27 @@ class ReservaController extends Controller
     {
         $user = Auth::user();
 
+        
         try {
             DB::beginTransaction();
-
+            
+            $isNewReservationsAllowed = ReservasHelper::isNewReservationsAllowed();
+    
+            if (!$isNewReservationsAllowed) {
+                return response()->json([
+                    'message' => 'Novas reservas foram pausadas pelo estabelecimento, tente mais tarde!'
+                ], 400);
+            }
+            
             $isAvailable = ReservasHelper::checkAvailability(
                 $request->data,
                 $request->hora,
                 $request->quantidade_cadeiras
             );
 
-            if (! $isAvailable) {
+            if (!$isAvailable) {
                 return response()->json([
-                    'message' => 'Reserva indisponível para esse horário'
+                    'message' => 'Reservas indisponíveis para esse horário.'
                 ], 400);
             }
 
