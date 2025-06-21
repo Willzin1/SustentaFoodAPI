@@ -124,3 +124,6 @@ Para acessar a documentação completa e detalhada, acesse [API_DOCUMENTATION.md
 
 ## Suporte
 Para suporte, envie um email para [william.mendonca34@gmail.com]
+
+## Licença
+Este projeto está licenciado sob a licença [MIT](LICENSE)
