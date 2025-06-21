@@ -22,7 +22,7 @@ Sistema desenvolvido como TCC do curso Técnico em Desenvolvimento de Sistemas, 
 
 1. Clone o repositório
 ```bash
-git clone [https://github.com/Willzin1/SustentaFoodAPI]
+git clone https://github.com/Willzin1/SustentaFoodAPI
 ```
 
 2. Instale as dependências
