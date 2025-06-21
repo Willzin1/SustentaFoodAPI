@@ -44,6 +44,12 @@
         - [Enviar e-mail de confirmação de reserva](#confirmar-reserva)
         - [Enviar e-mail de confirmação de conta](#verificar-email)
         - [Reenviar e-mail de confirmação de conta](#reenviar-verificação)
+   - [Configurações do Sistema](#configurações-do-sistema)
+        - [Atualizar capacidade máxima](#atualizar-capacidade-máxima) 
+        - [Pausar reservas](#pausar-reservas)
+        - [Retomar reservas](#retomar-reservas)
+        - [Obter Configurações Gerais](#obter-configurações-gerais)
+        - [Obter capacidade máxima](#obter-capacidade-máxima)
 
 ## Introdução
 
@@ -54,6 +60,7 @@ Esta API foi desenvolvida como parte do Trabalho de Conclusão de Curso (TCC) pa
 - Cardápio e pratos
 - Pratos favoritos
 - Relatórios e gráficos administrativos
+- Configurações gerais para administração
 
 A API foi desenvolvida com o framework **Laravel 12** e utiliza autenticação via **Laravel sanctum**
 
@@ -1240,5 +1247,106 @@ de pratos cadastrados. Aceita parâmetros de busca.
 ```json
 {
   "message": "Seu e-mail já foi verificado."
+}
+```
+
+### Configurações do Sistema
+
+#### Obter Configurações Gerais
+- **Método:** `GET`
+- **Endpoint:** `/api/settings`
+- **Autenticação:** Privado (Requer role de admin)
+- **Descrição:** Retorna as configurações gerais do sistema, como capacidade máxima e status das reservas.
+
+# Exemplo
+
+**Resposta em caso de sucesso (200)**
+```json
+{
+  "reservas_pausadas": "false",
+  "capacidade_maxima": 80
+}
+```
+
+#### Obter Capacidade Máxima
+- **Método:** `GET`
+- **Endpoint:** `/api/settings/max-capacity`
+- **Autenticação:** Privado (Requer role de admin)
+- **Descrição:** Retorna o valor atual da capacidade máxima de pessoas no restaurante.
+
+# Exemplo
+
+**Resposta em caso de sucesso (200)**
+```json
+{
+  "capacidade_maxima": 80
+}
+```
+
+#### Atualizar Capacidade Máxima
+- **Método:** `PUT`
+- **Endpoint:** `/api/settings/update-max-capacity`
+- **Autenticação:** Privado (Requer role de admin)
+- **Descrição:** Atualiza o valor da capacidade máxima de pessoas no restaurante.
+- **Body (JSON):**
+    - `capacidade_maxima` (integer, obrigatório) - Valor entre 1 e 160.
+
+# Exemplo
+
+**Body (JSON)**
+```json
+{
+  "capacidade_maxima": 100
+}
+```
+
+**Resposta em caso de sucesso (200)**
+```json
+{
+  "message": "Capacidade máxima atualizada com sucesso",
+  "capacidade_maxima": 100
+}
+```
+
+**Resposta em caso de erro (422)**
+```json
+{
+  "errors": {
+    "capacidade_maxima": [
+      "No máximo 160"
+    ]
+  }
+}
+```
+
+#### Pausar Reservas
+- **Método:** `POST`
+- **Endpoint:** `/api/settings/pause-reservations`
+- **Autenticação:** Privado (Requer role de admin)
+- **Descrição:** Pausa o sistema de reservas, impedindo novas reservas até ser retomado.
+
+# Exemplo
+
+**Resposta em caso de sucesso (200)**
+```json
+{
+  "message": "Reservas pausadas com sucesso",
+  "reservas_pausadas": true
+}
+```
+
+#### Retomar Reservas
+- **Método:** `POST`
+- **Endpoint:** `/api/settings/unpause-reservations`
+- **Autenticação:** Privado (Requer role de admin)
+- **Descrição:** Retoma o sistema de reservas, permitindo novas reservas.
+
+# Exemplo
+
+**Resposta em caso de sucesso (200)**
+```json
+{
+  "message": "Reservas retomadas com sucesso",
+  "reservas_pausadas": false
 }
 ```
