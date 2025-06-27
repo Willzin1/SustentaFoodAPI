@@ -23,7 +23,10 @@ class User extends Authenticatable implements MustVerifyEmail
     private static $adminEmails = [
         'admin@example.com',
         'william.mendonca34@gmail.com',
-        'william.mendonca44@gmail.com'
+        'rianaoliver1910@gmail.com',
+        'stephanychryscv@gmail.com',
+        'sofiaoliveirasantos2007@gmail.com',
+        'eusouwelinton@gmail.com'
     ];
 
     /**
